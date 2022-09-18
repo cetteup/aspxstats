@@ -1,10 +1,11 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, List
+from typing import Dict, List, Union
 
 from .client import AspxClient, ParseTarget
 from .common import ProviderConfig
 from .exceptions import InvalidParameterError, InvalidResponseError
+from .validation import AttributeSchema, is_valid_dict
 
 
 class Bf2StatsProvider(str, Enum):
@@ -97,28 +98,17 @@ class Bf2AspxClient(AspxClient):
 
     @staticmethod
     def is_valid_searchforplayers_response_data(parsed: dict) -> bool:
-        # Check if "asof" is present and is a numeric string
-        if not isinstance(parsed.get('asof'), str) or not parsed['asof'].isnumeric():
-            return False
+        schema: Dict[str, Union[dict, AttributeSchema]] = {
+            'asof': AttributeSchema(type=str, isnumeric=True),
+            'results': AttributeSchema(type=list, children={
+                'n': AttributeSchema(type=str, isnumeric=True),
+                'pid': AttributeSchema(type=str, isnumeric=True),
+                'nick': AttributeSchema(type=str),
+                'score': AttributeSchema(type=str, isnumeric=True)
+            })
+        }
 
-        # Check if "results" is present and is a list
-        if not isinstance(parsed.get('results'), list):
-            return False
-
-        # Check if all elements in "results" are dictionaries with the required keys and values of type str
-        return all(
-            isinstance(result, dict) and
-            Bf2AspxClient.is_valid_searchforplayers_result_data(result) for result in parsed['results']
-        )
-
-    @staticmethod
-    def is_valid_searchforplayers_result_data(result: dict) -> bool:
-        # Check if nick is present and is a string
-        if not isinstance(result.get('nick'), str):
-            return False
-
-        # Check if n, nick and score are presnet and are numeric strings
-        return all(isinstance(result.get(key), str) and result.get(key).isnumeric() for key in ['n', 'pid', 'score'])
+        return is_valid_dict(parsed, schema)
 
     @staticmethod
     def get_provider_config(provider: Bf2StatsProvider = Bf2StatsProvider.BF2HUB) -> ProviderConfig:

@@ -10,14 +10,14 @@ from aspxstats.exceptions import InvalidParameterError
 class Bf2AspxClientTest(TestCase):
     def test_is_valid_searchforplayers_response_data(self):
         @dataclass
-        class TestCase:
+        class SearchforplayersTestCase:
             name: str
             parsed: dict
             wantIsValid: bool
 
         # GIVEN
-        tests: List[TestCase] = [
-            TestCase(
+        tests: List[SearchforplayersTestCase] = [
+            SearchforplayersTestCase(
                 name='true for valid searchforplayers data',
                 parsed={
                     'asof': '1663447766',
@@ -38,7 +38,7 @@ class Bf2AspxClientTest(TestCase):
                 },
                 wantIsValid=True
             ),
-            TestCase(
+            SearchforplayersTestCase(
                 name='true for valid searchforplayers data without any results',
                 parsed={
                     'asof': '1663447766',
@@ -46,7 +46,7 @@ class Bf2AspxClientTest(TestCase):
                 },
                 wantIsValid=True
             ),
-            TestCase(
+            SearchforplayersTestCase(
                 name='false for missing asof',
                 parsed={
                     'results': [
@@ -60,7 +60,7 @@ class Bf2AspxClientTest(TestCase):
                 },
                 wantIsValid=False
             ),
-            TestCase(
+            SearchforplayersTestCase(
                 name='false for non-string asof',
                 parsed={
                     'asof': 1663447766,
@@ -75,23 +75,33 @@ class Bf2AspxClientTest(TestCase):
                 },
                 wantIsValid=False
             ),
-            TestCase(
+            SearchforplayersTestCase(
                 name='false for results missing',
                 parsed={
                     'asof': '1663447766'
                 },
                 wantIsValid=False
             ),
-            TestCase(
+            SearchforplayersTestCase(
                 name='false for non-list results',
                 parsed={
                     'asof': '1663447766',
-                    'results': 'not-a-dict'
+                    'results': 'not-a-list'
                 },
                 wantIsValid=False
             ),
-            TestCase(
-                name='false for invalid search result',
+            SearchforplayersTestCase(
+                name='false for non-dict in results',
+                parsed={
+                    'asof': '1663447766',
+                    'results': [
+                        'not-a-dict'
+                    ]
+                },
+                wantIsValid=False
+            ),
+            SearchforplayersTestCase(
+                name='false for search result containing non-numeric-string numeric-string attribute',
                 parsed={
                     'asof': '1663447766',
                     'results': [
@@ -105,7 +115,36 @@ class Bf2AspxClientTest(TestCase):
                 },
                 wantIsValid=False
             ),
-            TestCase(
+            SearchforplayersTestCase(
+                name='false for search result containing non-string string attribute',
+                parsed={
+                    'asof': '1663447766',
+                    'results': [
+                        {
+                            'n': '1',
+                            'pid': '45377286',
+                            'nick': 123456,
+                            'score': '6458'
+                        },
+                    ]
+                },
+                wantIsValid=False
+            ),
+            SearchforplayersTestCase(
+                name='false for search result missing an attribute',
+                parsed={
+                    'asof': '1663447766',
+                    'results': [
+                        {
+                            'pid': '45377286',
+                            'nick': 'mister249',
+                            'score': '6458'
+                        },
+                    ]
+                },
+                wantIsValid=False
+            ),
+            SearchforplayersTestCase(
                 name='false for valid search result followed by invalid',
                 parsed={
                     'asof': '1663447766',
@@ -137,71 +176,14 @@ class Bf2AspxClientTest(TestCase):
 
     def test_is_valid_searchforplayers_result_data(self):
         @dataclass
-        class TestCase:
+        class SearchforplayersTestCase:
             name: str
             result: dict
             wantIsValid: bool
 
         # GIVEN
-        tests: List[TestCase] = [
-            TestCase(
-                name='true for valid searchforplayers result',
-                result={
-                    'n': '1',
-                    'pid': '45377286',
-                    'nick': 'mister249',
-                    'score': '6458'
-                },
-                wantIsValid=True
-            ),
-            TestCase(
-                name='false for missing numeric string attribute',
-                result={
-                    'pid': '45377286',
-                    'nick': 'mister249',
-                    'score': '6458'
-                },
-                wantIsValid=False
-            ),
-            TestCase(
-                name='false for non-string numeric string attribute',
-                result={
-                    'n': 1,
-                    'pid': '45377286',
-                    'nick': 'mister249',
-                    'score': '6458'
-                },
-                wantIsValid=False
-            ),
-            TestCase(
-                name='false for non-numeric string numeric string attribute',
-                result={
-                    'n': 'not-numeric',
-                    'pid': '45377286',
-                    'nick': 'mister249',
-                    'score': '6458'
-                },
-                wantIsValid=False
-            ),
-            TestCase(
-                name='false for missing nick',
-                result={
-                    'n': '1',
-                    'pid': '45377286',
-                    'score': '6458'
-                },
-                wantIsValid=False
-            ),
-            TestCase(
-                name='false for non-string nick',
-                result={
-                    'n': '1',
-                    'pid': '45377286',
-                    'nick': 123456,
-                    'score': '6458'
-                },
-                wantIsValid=False
-            )
+        tests: List[SearchforplayersTestCase] = [
+
         ]
 
         for t in tests:
