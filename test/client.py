@@ -83,10 +83,16 @@ class AspxClientTest(TestCase):
             )
 
             # WHEN/THEN
-            self.assertRaisesRegex(ClientError, r'^Failed to fetch ASPX data \(HTTP/500\)$', client.get_aspx_data,'getplayerinfo.aspx', {
-                'pid': '500362798',
-                'info': 'mtm-0,mwn-0,mls-0'
-            })
+            self.assertRaisesRegex(
+                ClientError,
+                r'^Failed to fetch ASPX data \(HTTP/500\)$',
+                client.get_aspx_data,
+                'getplayerinfo.aspx',
+                {
+                    'pid': '500362798',
+                    'info': 'mtm-0,mwn-0,mls-0'
+                }
+            )
 
     def test_get_aspx_data_error_for_requests_exception(self):
         with patch('requests.session') as patched_session:
@@ -111,10 +117,16 @@ class AspxClientTest(TestCase):
             )
 
             # WHEN/THEN
-            self.assertRaisesRegex(ClientError, r'^Failed to fetch ASPX data: some-error$', client.get_aspx_data, 'getplayerinfo.aspx', {
-                'pid': '500362798',
-                'info': 'mtm-0,mwn-0,mls-0'
-            })
+            self.assertRaisesRegex(
+                ClientError,
+                r'^Failed to fetch ASPX data: some-error$',
+                client.get_aspx_data,
+                'getplayerinfo.aspx',
+                {
+                    'pid': '500362798',
+                    'info': 'mtm-0,mwn-0,mls-0'
+                }
+            )
 
     def test_is_valid_aspx_response_bf2hub_incorrect_parameters(self):
         # GIVEN
@@ -492,13 +504,13 @@ class AspxClientTest(TestCase):
         # WHEN
         parsed = AspxClient.parse_aspx_response(raw_data, [
             ParseTarget(to_root=True),
-            ParseTarget('players', as_list=True)
+            ParseTarget('results', as_list=True)
         ])
 
         # THEN
         expected = {
             'asof': '1663447766',
-            'players': [
+            'results': [
                 {
                     'n': '1',
                     'pid': '45377286',
@@ -529,13 +541,13 @@ class AspxClientTest(TestCase):
         # WHEN
         parsed = AspxClient.parse_aspx_response(raw_data, [
             ParseTarget(to_root=True),
-            ParseTarget('players', as_list=True)
+            ParseTarget('results', as_list=True)
         ])
 
         # THEN
         expected = {
             'asof': '1663447766',
-            'players': [
+            'results': [
                 {
                     'n': '1',
                     'pid': '500362798',
@@ -559,13 +571,13 @@ class AspxClientTest(TestCase):
         # WHEN
         parsed = AspxClient.parse_aspx_response(raw_data, [
             ParseTarget(to_root=True),
-            ParseTarget('players', as_list=True)
+            ParseTarget('results', as_list=True)
         ])
 
         # THEN
         expected = {
             'asof': '1663447766',
-            'players': []
+            'results': []
         }
         self.assertDictEqual(expected, parsed)
 

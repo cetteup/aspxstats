@@ -12,3 +12,7 @@ class InvalidResponseError(Error):
 
 class NotFoundError(Error):
     pass
+
+
+class InvalidParameterError(Error):
+    pass
