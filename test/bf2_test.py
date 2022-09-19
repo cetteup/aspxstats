@@ -106,7 +106,7 @@ class Bf2AspxClientTest(TestCase):
                     'asof': '1663447766',
                     'results': [
                         {
-                            'n': 1,
+                            'n': 'abddef',
                             'pid': '45377286',
                             'nick': 'mister249',
                             'score': '6458'
@@ -173,22 +173,220 @@ class Bf2AspxClientTest(TestCase):
 
             # THEN
             self.assertEqual(t.wantIsValid, valid, f'"{t.name}" failed\nexpected: {t.wantIsValid}\nactual: {valid}')
-
-    def test_is_valid_searchforplayers_result_data(self):
+    
+    def test_is_valid_getleaderboard_response_data(self):
         @dataclass
-        class SearchforplayersTestCase:
+        class GetleaderboardTestCase:
             name: str
-            result: dict
+            parsed: dict
             wantIsValid: bool
 
         # GIVEN
-        tests: List[SearchforplayersTestCase] = [
-
+        tests: List[GetleaderboardTestCase] = [
+            GetleaderboardTestCase(
+                name='true for valid getleaderboard data',
+                parsed={
+                    'size': '100000',
+                    'asof': '1663447766',
+                    'entries': [
+                        {
+                            'n': '1',
+                            'pid': '45377286',
+                            'nick': 'mister249',
+                            'playerrank': '13',
+                            'countrycode': 'DE'
+                        },
+                        {
+                            'n': '2',
+                            'pid': '500362798',
+                            'nick': 'mister2499',
+                            'playerrank': '6',
+                            'countrycode': 'UA'
+                        }
+                    ]
+                },
+                wantIsValid=True
+            ),
+            GetleaderboardTestCase(
+                name='true for valid getleaderboard data without any entries',
+                parsed={
+                    'size': '100000',
+                    'asof': '1663447766',
+                    'entries': []
+                },
+                wantIsValid=True
+            ),
+            GetleaderboardTestCase(
+                name='false for missing size',
+                parsed={
+                    'asof': '1663447766',
+                    'entries': [
+                        {
+                            'n': '1',
+                            'pid': '45377286',
+                            'nick': 'mister249',
+                            'playerrank': '13',
+                            'country_code': 'DE'
+                        }
+                    ]
+                },
+                wantIsValid=False
+            ),
+            GetleaderboardTestCase(
+                name='false for non-string size',
+                parsed={
+                    'size': 100000,
+                    'asof': '1663447766',
+                    'entries': [
+                        {
+                            'n': '1',
+                            'pid': '45377286',
+                            'nick': 'mister249',
+                            'playerrank': '13',
+                            'country_code': 'DE'
+                        }
+                    ]
+                },
+                wantIsValid=False
+            ),
+            GetleaderboardTestCase(
+                name='false for missing asof',
+                parsed={
+                    'entries': [
+                        {
+                            'n': '1',
+                            'pid': '45377286',
+                            'nick': 'mister249',
+                            'playerrank': '13',
+                            'country_code': 'DE'
+                        }
+                    ]
+                },
+                wantIsValid=False
+            ),
+            GetleaderboardTestCase(
+                name='false for non-string asof',
+                parsed={
+                    'asof': 1663447766,
+                    'entries': [
+                        {
+                            'n': '1',
+                            'pid': '45377286',
+                            'nick': 'mister249',
+                            'playerrank': '13',
+                            'country_code': 'DE'
+                        }
+                    ]
+                },
+                wantIsValid=False
+            ),
+            GetleaderboardTestCase(
+                name='false for entries missing',
+                parsed={
+                    'size': '100000',
+                    'asof': '1663447766',
+                },
+                wantIsValid=False
+            ),
+            GetleaderboardTestCase(
+                name='false for non-list entries',
+                parsed={
+                    'size': '100000',
+                    'asof': '1663447766',
+                    'entries': 'not-a-list'
+                },
+                wantIsValid=False
+            ),
+            GetleaderboardTestCase(
+                name='false for non-dict in  entries',
+                parsed={
+                    'size': '100000',
+                    'asof': '1663447766',
+                    'entries': [
+                        'not-a-dict'
+                    ]
+                },
+                wantIsValid=False
+            ),
+            GetleaderboardTestCase(
+                name='false for search result containing non-numeric-string numeric-string attribute',
+                parsed={
+                    'size': '100000',
+                    'asof': '1663447766',
+                    'entries': [
+                        {
+                            'n': 'abcdef',
+                            'pid': '45377286',
+                            'nick': 'mister249',
+                            'playerrank': '13',
+                            'country_code': 'DE'
+                        }
+                    ]
+                },
+                wantIsValid=False
+            ),
+            GetleaderboardTestCase(
+                name='false for search result containing non-string string attribute',
+                parsed={
+                    'size': '100000',
+                    'asof': '1663447766',
+                    'entries': [
+                        {
+                            'n': '1',
+                            'pid': '45377286',
+                            'nick': 123456,
+                            'playerrank': '13',
+                            'country_code': 'DE'
+                        }
+                    ]
+                },
+                wantIsValid=False
+            ),
+            GetleaderboardTestCase(
+                name='false for search result missing an attribute',
+                parsed={
+                    'size': '100000',
+                    'asof': '1663447766',
+                    'entries': [
+                        {
+                            'pid': '45377286',
+                            'nick': 'mister249',
+                            'playerrank': '13',
+                            'country_code': 'DE'
+                        },
+                    ]
+                },
+                wantIsValid=False
+            ),
+            GetleaderboardTestCase(
+                name='false for valid search result followed by invalid',
+                parsed={
+                    'size': '100000',
+                    'asof': '1663447766',
+                    'entries': [
+                        {
+                            'n': '1',
+                            'pid': '45377286',
+                            'nick': 'mister249',
+                            'playerrank': '13',
+                            'country_code': 'DE'
+                        },
+                        {
+                            'n': '2',
+                            'pid': '500362798',
+                            'nick': 'mister2499',
+                            'playerrank': 8,
+                            'country_code': 'UA'
+                        }
+                    ]
+                },
+                wantIsValid=False
+            ),
         ]
 
         for t in tests:
             # WHEN
-            valid = Bf2AspxClient.is_valid_searchforplayers_result_data(t.result)
+            valid = Bf2AspxClient.is_valid_getleaderboard_score_response_data(t.parsed)
 
             # THEN
             self.assertEqual(t.wantIsValid, valid, f'"{t.name}" failed\nexpected: {t.wantIsValid}\nactual: {valid}')

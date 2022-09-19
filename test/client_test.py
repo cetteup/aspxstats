@@ -435,14 +435,14 @@ class AspxClientTest(TestCase):
         # WHEN
         parsed = AspxClient.parse_aspx_response(raw_data, [
             ParseTarget(to_root=True),
-            ParseTarget('players', as_list=True)
+            ParseTarget('entries', as_list=True)
         ])
 
         # THEN
         expected = {
             'size': '100000',
             'asof': '1663365600',
-            'players': [
+            'entries': [
                 {
                     'n': '1',
                     'pid': '43812139',
@@ -478,14 +478,14 @@ class AspxClientTest(TestCase):
         # WHEN
         parsed = AspxClient.parse_aspx_response(raw_data, [
             ParseTarget(to_root=True),
-            ParseTarget('players', as_list=True)
+            ParseTarget('entries', as_list=True)
         ])
 
         # THEN
         expected = {
             'size': '100000',
             'asof': '1663365600',
-            'players': []
+            'entries': []
         }
         self.assertDictEqual(expected, parsed)
 
@@ -792,7 +792,7 @@ class AspxClientTest(TestCase):
         # WHEN/THEN
         self.assertRaises(InvalidResponseError, AspxClient.parse_aspx_response, raw_data, [
             ParseTarget(to_root=True),
-            ParseTarget('players', as_list=True)
+            ParseTarget('entries', as_list=True)
         ])
 
     def test_parse_aspx_data_error_missing_parse_target(self):
