@@ -173,7 +173,7 @@ class AspxClientTest(TestCase):
 
             # THEN
             self.assertEqual(t.wantIsValid, valid, f'"{t.name}" failed\nexpected: {t.wantIsValid}\nactual: {valid}')
-    
+
     def test_is_valid_getleaderboard_response_data(self):
         @dataclass
         class GetleaderboardTestCase:
