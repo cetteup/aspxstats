@@ -24,6 +24,15 @@ class AspxClient:
         self.session = requests.session()
         self.session.headers = default_headers
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+        self.close()
+
+    def close(self) -> None:
+        self.session.close()
+
     def get_aspx_data(self, endpoint: str, params: Optional[Dict[str, str]] = None) -> str:
         """
         Fetch raw, unparsed data from a .aspx endpoint
