@@ -2,13 +2,12 @@ from dataclasses import dataclass
 from typing import List
 from unittest import TestCase
 
-from aspxstats.bf2 import Bf2AspxClient
-from aspxstats.types import Bf2StatsProvider
-from aspxstats.common import ProviderConfig
-from aspxstats.exceptions import InvalidParameterError
+from aspxstats import InvalidParameterError
+from aspxstats.bf2 import AspxClient, StatsProvider
+from aspxstats.types import ProviderConfig
 
 
-class Bf2AspxClientTest(TestCase):
+class AspxClientTest(TestCase):
     def test_is_valid_searchforplayers_response_data(self):
         @dataclass
         class SearchforplayersTestCase:
@@ -170,7 +169,7 @@ class Bf2AspxClientTest(TestCase):
 
         for t in tests:
             # WHEN
-            valid = Bf2AspxClient.is_valid_searchforplayers_response_data(t.parsed)
+            valid = AspxClient.is_valid_searchforplayers_response_data(t.parsed)
 
             # THEN
             self.assertEqual(t.wantIsValid, valid, f'"{t.name}" failed\nexpected: {t.wantIsValid}\nactual: {valid}')
@@ -387,17 +386,17 @@ class Bf2AspxClientTest(TestCase):
 
         for t in tests:
             # WHEN
-            valid = Bf2AspxClient.is_valid_getleaderboard_score_response_data(t.parsed)
+            valid = AspxClient.is_valid_getleaderboard_score_response_data(t.parsed)
 
             # THEN
             self.assertEqual(t.wantIsValid, valid, f'"{t.name}" failed\nexpected: {t.wantIsValid}\nactual: {valid}')
 
     def test_get_provider_config(self):
         # GIVEN
-        provider = Bf2StatsProvider.BF2HUB
+        provider = StatsProvider.BF2HUB
 
         # WHEN
-        config = Bf2AspxClient.get_provider_config(provider)
+        config = AspxClient.get_provider_config(provider)
 
         # THEN
         expected = ProviderConfig(
@@ -418,6 +417,6 @@ class Bf2AspxClientTest(TestCase):
         self.assertRaisesRegex(
             InvalidParameterError,
             '^No provider config for given provider.*$',
-            Bf2AspxClient.get_provider_config,
+            AspxClient.get_provider_config,
             provider
         )

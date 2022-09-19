@@ -1,36 +1,11 @@
 import re
-from enum import Enum
 from typing import Dict, Optional, Tuple, List
 from urllib.parse import urljoin
 
 import requests as requests
 
 from .exceptions import ClientError, InvalidResponseError, Error
-
-
-class LineType(str, Enum):
-    HEADERS = 'header'
-    DATA = 'data'
-
-
-class Dataset:
-    keys: str
-    data: List[str]
-
-    def __init__(self, keys: str):
-        self.keys = keys
-        self.data = []
-
-
-class ParseTarget:
-    to_key: str
-    as_list: bool
-    to_root: bool
-
-    def __init__(self, to_key: str = '', as_list: bool = False, to_root: bool = False):
-        self.to_key = to_key
-        self.as_list = as_list
-        self.to_root = to_root
+from .types import LineType, Dataset, ParseTarget
 
 
 class AspxClient:

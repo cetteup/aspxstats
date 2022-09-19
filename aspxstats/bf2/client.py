@@ -1,36 +1,36 @@
 from typing import Dict, Optional, Union
 
-from .client import AspxClient, ParseTarget
-from .common import ProviderConfig
-from .exceptions import InvalidParameterError, InvalidResponseError
-from .types import Bf2StatsProvider, Bf2SearchMatchType, Bf2SearchSortOrder, Bf2PlayerSearchResult, \
-    Bf2PlayerSearchResponse, Bf2LeaderboardType, Bf2ScoreLeaderboardId, Bf2WeaponLeaderboardId, Bf2VehicleLeaderboardId, \
-    Bf2KitLeaderboardId, Bf2LeaderboardEntry, Bf2LeaderboardResponse
-from .validation import AttributeSchema, is_valid_dict
+from ..client import AspxClient as BaseAspxClient
+from ..exceptions import InvalidParameterError, InvalidResponseError
+from ..types import ProviderConfig, ParseTarget
+from ..validation import AttributeSchema, is_valid_dict
+from .types import StatsProvider, SearchMatchType, SearchSortOrder, PlayerSearchResult, \
+    PlayerSearchResponse, LeaderboardType, ScoreLeaderboardId, WeaponLeaderboardId, VehicleLeaderboardId, \
+    KitLeaderboardId, LeaderboardEntry, LeaderboardResponse
 
 
-class Bf2AspxClient(AspxClient):
-    provider: Bf2StatsProvider
+class AspxClient(BaseAspxClient):
+    provider: StatsProvider
 
-    def __init__(self, provider: Bf2StatsProvider = Bf2StatsProvider.BF2HUB, timeout: float = 2.0):
-        provider_config = Bf2AspxClient.get_provider_config(provider)
+    def __init__(self, provider: StatsProvider = StatsProvider.BF2HUB, timeout: float = 2.0):
+        provider_config = AspxClient.get_provider_config(provider)
         super().__init__(provider_config.base_uri, provider_config.default_headers, timeout)
         self.provider = provider
 
     def searchforplayers(
             self,
             nick: str,
-            where: Bf2SearchMatchType = Bf2SearchMatchType.EQUALS,
-            sort: Bf2SearchSortOrder = Bf2SearchSortOrder.ASCENDING
-    ) -> Bf2PlayerSearchResponse:
+            where: SearchMatchType = SearchMatchType.EQUALS,
+            sort: SearchSortOrder = SearchSortOrder.ASCENDING
+    ) -> PlayerSearchResponse:
         parsed = self.searchforplayers_raw(nick, where, sort)
 
         # We can safely access keys and parse integers directly here,
         # since we already validated all used are present and all relevant strings are numeric
-        return Bf2PlayerSearchResponse(
+        return PlayerSearchResponse(
             asof=int(parsed['asof']),
             results=[
-                Bf2PlayerSearchResult(
+                PlayerSearchResult(
                     n=int(result['n']),
                     nick=result['nick'],
                     pid=int(result['pid']),
@@ -42,8 +42,8 @@ class Bf2AspxClient(AspxClient):
     def searchforplayers_raw(
             self,
             nick: str,
-            where: Bf2SearchMatchType = Bf2SearchMatchType.EQUALS,
-            sort: Bf2SearchSortOrder = Bf2SearchSortOrder.ASCENDING
+            where: SearchMatchType = SearchMatchType.EQUALS,
+            sort: SearchSortOrder = SearchSortOrder.ASCENDING
     ) -> dict:
         raw_data = self.get_aspx_data('searchforplayers.aspx', {
             'nick': nick,
@@ -82,25 +82,25 @@ class Bf2AspxClient(AspxClient):
 
     def getleaderboard(
             self,
-            leaderboard_type: Bf2LeaderboardType = Bf2LeaderboardType.SCORE,
+            leaderboard_type: LeaderboardType = LeaderboardType.SCORE,
             leaderboard_id: Union[
-                Bf2ScoreLeaderboardId,
-                Bf2WeaponLeaderboardId,
-                Bf2VehicleLeaderboardId,
-                Bf2KitLeaderboardId
-            ] = Bf2ScoreLeaderboardId.OVERALL,
+                ScoreLeaderboardId,
+                WeaponLeaderboardId,
+                VehicleLeaderboardId,
+                KitLeaderboardId
+            ] = ScoreLeaderboardId.OVERALL,
             pos: int = 1,
             before: int = 0,
             after: int = 19,
             pid: Optional[int] = None
-    ) -> Bf2LeaderboardResponse:
+    ) -> LeaderboardResponse:
         parsed = self.getleaderboard_raw(leaderboard_type, leaderboard_id, pos, before, after, pid)
 
-        return Bf2LeaderboardResponse(
+        return LeaderboardResponse(
             size=int(parsed['size']),
             asof=int(parsed['asof']),
             entries=[
-                Bf2LeaderboardEntry(
+                LeaderboardEntry(
                     n=int(entry['n']),
                     pid=int(entry['pid']),
                     nick=entry['nick'],
@@ -112,13 +112,13 @@ class Bf2AspxClient(AspxClient):
 
     def getleaderboard_raw(
             self,
-            leaderboard_type: Bf2LeaderboardType = Bf2LeaderboardType.SCORE,
+            leaderboard_type: LeaderboardType = LeaderboardType.SCORE,
             leaderboard_id: Union[
-                Bf2ScoreLeaderboardId,
-                Bf2WeaponLeaderboardId,
-                Bf2VehicleLeaderboardId,
-                Bf2KitLeaderboardId
-            ] = Bf2ScoreLeaderboardId.OVERALL,
+                ScoreLeaderboardId,
+                WeaponLeaderboardId,
+                VehicleLeaderboardId,
+                KitLeaderboardId
+            ] = ScoreLeaderboardId.OVERALL,
             pos: int = 1,
             before: int = 0,
             after: int = 19,
@@ -167,16 +167,16 @@ class Bf2AspxClient(AspxClient):
         return is_valid_dict(parsed, schema)
 
     @staticmethod
-    def get_provider_config(provider: Bf2StatsProvider = Bf2StatsProvider.BF2HUB) -> ProviderConfig:
-        provider_configs: Dict[Bf2StatsProvider, ProviderConfig] = {
-            Bf2StatsProvider.BF2HUB: ProviderConfig(
+    def get_provider_config(provider: StatsProvider = StatsProvider.BF2HUB) -> ProviderConfig:
+        provider_configs: Dict[StatsProvider, ProviderConfig] = {
+            StatsProvider.BF2HUB: ProviderConfig(
                 base_uri='http://official.ranking.bf2hub.com/ASP/',
                 default_headers={
                     'Host': 'BF2web.gamespy.com',
                     'User-Agent': 'GameSpyHTTP/1.0'
                 }
             ),
-            Bf2StatsProvider.PLAYBF2: ProviderConfig(
+            StatsProvider.PLAYBF2: ProviderConfig(
                 base_uri='http://bf2web.playbf2.ru/ASP/'
             )
         }

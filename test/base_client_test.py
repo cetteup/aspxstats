@@ -4,7 +4,8 @@ from unittest.mock import patch
 
 import requests
 
-from aspxstats.client import AspxClient, ParseTarget
+from aspxstats.client import AspxClient
+from aspxstats.types import ParseTarget
 from aspxstats.exceptions import Error, ClientError, InvalidResponseError
 
 
