@@ -2,7 +2,8 @@ from dataclasses import dataclass
 from typing import List
 from unittest import TestCase
 
-from aspxstats.bf2 import Bf2AspxClient, Bf2StatsProvider
+from aspxstats.bf2 import Bf2AspxClient
+from aspxstats.types import Bf2StatsProvider
 from aspxstats.common import ProviderConfig
 from aspxstats.exceptions import InvalidParameterError
 
