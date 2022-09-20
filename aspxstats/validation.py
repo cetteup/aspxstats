@@ -7,6 +7,7 @@ class AttributeSchema:
     type: type
     is_numeric: bool = False
     is_floaty: bool = False
+    is_ratio: bool = False
     children: Optional[Dict[str, Union[dict, 'AttributeSchema']]] = None
 
 
@@ -20,6 +21,8 @@ def is_valid_attribute(attribute: Union[str, dict, list], schema: Dict[str, Unio
             return is_numeric(attribute)
         if isinstance(attribute, str) and schema.type == str and schema.is_floaty:
             return is_floaty(attribute)
+        if isinstance(attribute, str) and schema.type == str and schema.is_ratio:
+            return is_ratio(attribute)
         if isinstance(attribute, list) and schema.type == list:
             return all(is_valid_attribute(child, schema.children) for child in attribute)
         else:
@@ -51,3 +54,11 @@ def is_floaty(value: str) -> bool:
         return True
     except ValueError:
         return False
+
+
+def is_ratio(value: str) -> bool:
+    """
+    Test whether a string is ratio of two integers ("123:789", with "0" being accepted as the zero value)
+    """
+    elements = value.split(':', 1)
+    return len(elements) == 2 and all(is_numeric(elem) for elem in elements) or value == '0'

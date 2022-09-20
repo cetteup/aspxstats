@@ -22,20 +22,24 @@ class ValidationTest(TestCase):
                     'str': 'some-string',
                     'numeric-str': '123456',
                     'floaty-str': '7.89',
+                    'ratio-str': '123:789',
                     'sub-dict': {
                         'sub-dict-str': 'some-string',
                         'sub-dict-numeric-str': '123456',
                         'sub-dict-floaty-str': '7.89',
+                        'sub-dict-ratio-str': '123:789',
                     },
                     'list-of-dicts': [
                         {
                             'list-of-dicts-str': 'some-string',
                             'list-of-dicts-numeric-str': '123456',
                             'list-of-dicts-floaty-str': '7.89',
+                            'list-of-dicts-ratio-str': '123:789',
                             'list-of-dicts-sub-dict': {
                                 'list-of-dicts-sub-dict-str': 'some-string',
                                 'list-of-dicts-sub-dict-numeric-str': '123456',
                                 'list-of-dicts-sub-dict-floaty-str': '7.89',
+                                'list-of-dicts-sub-dict-ratio-str': '123:789',
                             },
                         }
                     ]
@@ -44,19 +48,23 @@ class ValidationTest(TestCase):
                     'str': AttributeSchema(type=str),
                     'numeric-str': AttributeSchema(type=str, is_numeric=True),
                     'floaty-str': AttributeSchema(type=str, is_floaty=True),
+                    'ratio-str': AttributeSchema(type=str, is_ratio=True),
                     'sub-dict': {
                         'sub-dict-str': AttributeSchema(type=str),
                         'sub-dict-numeric-str': AttributeSchema(type=str, is_numeric=True),
-                        'sub-dict-floaty-str': AttributeSchema(type=str, is_floaty=True)
+                        'sub-dict-floaty-str': AttributeSchema(type=str, is_floaty=True),
+                        'sub-dict-ratio-str': AttributeSchema(type=str, is_ratio=True),
                     },
                     'list-of-dicts': AttributeSchema(type=list, children={
                         'list-of-dicts-str': AttributeSchema(type=str),
                         'list-of-dicts-numeric-str': AttributeSchema(type=str, is_numeric=True),
                         'list-of-dicts-floaty-str': AttributeSchema(type=str, is_floaty=True),
+                        'list-of-dicts-ratio-str': AttributeSchema(type=str, is_ratio=True),
                         'list-of-dicts-sub-dict': {
                             'list-of-dicts-sub-dict-str': AttributeSchema(type=str),
                             'list-of-dicts-sub-dict-numeric-str': AttributeSchema(type=str, is_numeric=True),
-                            'list-of-dicts-sub-dict-floaty-str': AttributeSchema(type=str, is_floaty=True)
+                            'list-of-dicts-sub-dict-floaty-str': AttributeSchema(type=str, is_floaty=True),
+                            'list-of-dicts-sub-dict-ratio-str': AttributeSchema(type=str, is_ratio=True),
                         },
                     })
                 },
@@ -70,6 +78,16 @@ class ValidationTest(TestCase):
                 },
                 schema={
                     'str': AttributeSchema(type=str),
+                },
+                wantIsValid=True
+            ),
+            ValidationTestCase(
+                name='true for zero value ratio-string string attribute',
+                data={
+                    'ratio-str': '0',
+                },
+                schema={
+                    'ratio-str': AttributeSchema(type=str, is_ratio=True),
                 },
                 wantIsValid=True
             ),
@@ -100,6 +118,16 @@ class ValidationTest(TestCase):
                 },
                 schema={
                     'floaty-str': AttributeSchema(type=str, is_floaty=True),
+                },
+                wantIsValid=False
+            ),
+            ValidationTestCase(
+                name='false for non-ratio-string string attribute',
+                data={
+                    'ratio-str': 'not-a-ratio-string',
+                },
+                schema={
+                    'ratio-str': AttributeSchema(type=str, is_ratio=True),
                 },
                 wantIsValid=False
             ),
@@ -151,6 +179,20 @@ class ValidationTest(TestCase):
                 schema={
                     'sub-dict': {
                         'sub-dict-floaty-str': AttributeSchema(type=str, is_floaty=True),
+                    },
+                },
+                wantIsValid=False
+            ),
+            ValidationTestCase(
+                name='false for non-ratio-string string attribute in sub-dict attribute',
+                data={
+                    'sub-dict': {
+                        'sub-dict-ratioo-str': 'not-a-ratio-string',
+                    },
+                },
+                schema={
+                    'sub-dict': {
+                        'sub-dict-ratio-str': AttributeSchema(type=str, is_ratio=True),
                     },
                 },
                 wantIsValid=False
@@ -225,6 +267,22 @@ class ValidationTest(TestCase):
                 schema={
                     'list-of-dicts': AttributeSchema(type=list, children={
                         'floaty-str': AttributeSchema(type=str, is_floaty=True),
+                    })
+                },
+                wantIsValid=False
+            ),
+            ValidationTestCase(
+                name='false for non-ratio-string child attribute in list attribute',
+                data={
+                    'list-of-dicts': [
+                        {
+                            'ratio-str': 'not-a-ratio-string',
+                        }
+                    ],
+                },
+                schema={
+                    'list-of-dicts': AttributeSchema(type=list, children={
+                        'ratio-str': AttributeSchema(type=str, is_floaty=True),
                     })
                 },
                 wantIsValid=False
