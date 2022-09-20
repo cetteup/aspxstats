@@ -386,7 +386,7 @@ class AspxClientTest(TestCase):
 
         for t in tests:
             # WHEN
-            valid = AspxClient.is_valid_getleaderboard_score_response_data(t.parsed)
+            valid = AspxClient.is_valid_getleaderboard_response_data(t.parsed)
 
             # THEN
             self.assertEqual(t.wantIsValid, valid, f'"{t.name}" failed\nexpected: {t.wantIsValid}\nactual: {valid}')

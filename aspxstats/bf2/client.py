@@ -134,14 +134,14 @@ class AspxClient(BaseAspxClient):
             ParseTarget('entries', as_list=True)
         ])
 
-        valid_data = self.is_valid_getleaderboard_score_response_data(parsed)
+        valid_data = self.is_valid_getleaderboard_response_data(parsed)
         if not valid_data:
             raise InvalidResponseError(f'{self.provider} returned invalid getleaderboard response data')
 
         return parsed
 
     @staticmethod
-    def is_valid_getleaderboard_score_response_data(parsed: dict) -> bool:
+    def is_valid_getleaderboard_response_data(parsed: dict) -> bool:
         # TODO: Add per-leaderboard validation with respective attributes
         return is_valid_dict(parsed, GETLEADERBOARD_RESPONSE_SCHEMA)
 
