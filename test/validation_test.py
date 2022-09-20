@@ -21,34 +21,42 @@ class ValidationTest(TestCase):
                 data={
                     'str': 'some-string',
                     'numeric-str': '123456',
+                    'floaty-str': '7.89',
                     'sub-dict': {
                         'sub-dict-str': 'some-string',
                         'sub-dict-numeric-str': '123456',
+                        'sub-dict-floaty-str': '7.89',
                     },
                     'list-of-dicts': [
                         {
                             'list-of-dicts-str': 'some-string',
                             'list-of-dicts-numeric-str': '123456',
+                            'list-of-dicts-floaty-str': '7.89',
                             'list-of-dicts-sub-dict': {
                                 'list-of-dicts-sub-dict-str': 'some-string',
                                 'list-of-dicts-sub-dict-numeric-str': '123456',
+                                'list-of-dicts-sub-dict-floaty-str': '7.89',
                             },
                         }
                     ]
                 },
                 schema={
                     'str': AttributeSchema(type=str),
-                    'numeric-str': AttributeSchema(type=str, isnumeric=True),
+                    'numeric-str': AttributeSchema(type=str, is_numeric=True),
+                    'floaty-str': AttributeSchema(type=str, is_floaty=True),
                     'sub-dict': {
                         'sub-dict-str': AttributeSchema(type=str),
-                        'sub-dict-numeric-str': AttributeSchema(type=str, isnumeric=True)
+                        'sub-dict-numeric-str': AttributeSchema(type=str, is_numeric=True),
+                        'sub-dict-floaty-str': AttributeSchema(type=str, is_floaty=True)
                     },
                     'list-of-dicts': AttributeSchema(type=list, children={
                         'list-of-dicts-str': AttributeSchema(type=str),
-                        'list-of-dicts-numeric-str': AttributeSchema(type=str, isnumeric=True),
+                        'list-of-dicts-numeric-str': AttributeSchema(type=str, is_numeric=True),
+                        'list-of-dicts-floaty-str': AttributeSchema(type=str, is_floaty=True),
                         'list-of-dicts-sub-dict': {
                             'list-of-dicts-sub-dict-str': AttributeSchema(type=str),
-                            'list-of-dicts-sub-dict-numeric-str': AttributeSchema(type=str, isnumeric=True)
+                            'list-of-dicts-sub-dict-numeric-str': AttributeSchema(type=str, is_numeric=True),
+                            'list-of-dicts-sub-dict-floaty-str': AttributeSchema(type=str, is_floaty=True)
                         },
                     })
                 },
@@ -81,7 +89,17 @@ class ValidationTest(TestCase):
                     'numeric-str': 'not-a-numeric-string',
                 },
                 schema={
-                    'numeric-str': AttributeSchema(type=str, isnumeric=True),
+                    'numeric-str': AttributeSchema(type=str, is_numeric=True),
+                },
+                wantIsValid=False
+            ),
+            ValidationTestCase(
+                name='false for non-floaty-string string attribute',
+                data={
+                    'floaty-str': 'not-a-floaty-string',
+                },
+                schema={
+                    'floaty-str': AttributeSchema(type=str, is_floaty=True),
                 },
                 wantIsValid=False
             ),
@@ -118,7 +136,21 @@ class ValidationTest(TestCase):
                 },
                 schema={
                     'sub-dict': {
-                        'sub-dict-numeric-str': AttributeSchema(type=str, isnumeric=True),
+                        'sub-dict-numeric-str': AttributeSchema(type=str, is_numeric=True),
+                    },
+                },
+                wantIsValid=False
+            ),
+            ValidationTestCase(
+                name='false for non-floaty-string string attribute in sub-dict attribute',
+                data={
+                    'sub-dict': {
+                        'sub-dict-floaty-str': 'not-a-floaty-string',
+                    },
+                },
+                schema={
+                    'sub-dict': {
+                        'sub-dict-floaty-str': AttributeSchema(type=str, is_floaty=True),
                     },
                 },
                 wantIsValid=False
@@ -176,7 +208,23 @@ class ValidationTest(TestCase):
                 },
                 schema={
                     'list-of-dicts': AttributeSchema(type=list, children={
-                        'numeric-str': AttributeSchema(type=str, isnumeric=True),
+                        'numeric-str': AttributeSchema(type=str, is_numeric=True),
+                    })
+                },
+                wantIsValid=False
+            ),
+            ValidationTestCase(
+                name='false for non-floaty-string child attribute in list attribute',
+                data={
+                    'list-of-dicts': [
+                        {
+                            'floaty-str': 'not-a-floaty-string',
+                        }
+                    ],
+                },
+                schema={
+                    'list-of-dicts': AttributeSchema(type=list, children={
+                        'floaty-str': AttributeSchema(type=str, is_floaty=True),
                     })
                 },
                 wantIsValid=False

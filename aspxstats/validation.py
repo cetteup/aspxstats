@@ -5,7 +5,8 @@ from typing import Dict, Union, Optional
 @dataclass
 class AttributeSchema:
     type: type
-    isnumeric: bool = False
+    is_numeric: bool = False
+    is_floaty: bool = False
     children: Optional[Dict[str, Union[dict, 'AttributeSchema']]] = None
 
 
@@ -15,8 +16,10 @@ def is_valid_dict(data: dict, schema: Dict[str, Union[dict, AttributeSchema]]) -
 
 def is_valid_attribute(attribute: Union[str, dict, list], schema: Dict[str, Union[dict, AttributeSchema]]) -> bool:
     if isinstance(schema, AttributeSchema):
-        if isinstance(attribute, str) and schema.type == str and schema.isnumeric:
-            return attribute.isnumeric()
+        if isinstance(attribute, str) and schema.type == str and schema.is_numeric:
+            return is_numeric(attribute)
+        if isinstance(attribute, str) and schema.type == str and schema.is_floaty:
+            return is_floaty(attribute)
         if isinstance(attribute, list) and schema.type == list:
             return all(is_valid_attribute(child, schema.children) for child in attribute)
         else:
@@ -24,4 +27,27 @@ def is_valid_attribute(attribute: Union[str, dict, list], schema: Dict[str, Unio
     elif isinstance(attribute, dict) and isinstance(schema, dict):
         return is_valid_dict(attribute, schema)
     else:
+        return False
+
+
+def is_numeric(value: str) -> bool:
+    """
+    Test whether a string is parseable to int
+    (used instead of str.isnumeric(), since that cannot handle negative numbers)
+    """
+    try:
+        int(value)
+        return True
+    except ValueError:
+        return False
+
+
+def is_floaty(value: str) -> bool:
+    """
+    Test whether a string is parseable to float
+    """
+    try:
+        float(value)
+        return True
+    except ValueError:
         return False
