@@ -2,7 +2,8 @@ from typing import Union, Optional
 
 from .client import AspxClient
 from .types import SearchMatchType, SearchSortOrder, PlayerSearchResponse, StatsProvider, LeaderboardType, \
-    ScoreLeaderboardId, WeaponLeaderboardId, VehicleLeaderboardId, KitLeaderboardId, LeaderboardResponse
+    ScoreLeaderboardId, WeaponLeaderboardId, VehicleLeaderboardId, KitLeaderboardId, LeaderboardResponse, \
+    PlayerinfoKeySet
 
 
 def searchforplayers(
@@ -63,3 +64,13 @@ def getleaderboard_raw(
 ) -> dict:
     with AspxClient(provider, timeout) as client:
         return client.getleaderboard_raw(leaderboard_type, leaderboard_id, pos, before, after, pid)
+
+
+def getplayerinfo_raw(
+        pid: int,
+        key_set: PlayerinfoKeySet = PlayerinfoKeySet.GENERAL_STATS,
+        provider: StatsProvider = StatsProvider.BF2HUB,
+        timeout: float = 2.0
+) -> dict:
+    with AspxClient(provider, timeout) as client:
+        return client.getplayerinfo_raw(pid, key_set)

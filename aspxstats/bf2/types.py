@@ -121,3 +121,11 @@ class LeaderboardResponse:
         yield 'size', self.size
         yield 'asof', self.asof
         yield 'entries', [dict(entry) for entry in self.entries]
+
+
+class PlayerinfoKeySet(str, Enum):
+    GENERAL_STATS = 'per*,cmb*,twsc,cpcp,cacp,dfcp,kila,heal,rviv,rsup,rpar,tgte,dkas,dsab,cdsc,rank,cmsc,kick,kill,' \
+                    'deth,suic,ospm,klpm,klpr,dtpr,bksk,wdsk,bbrs,tcdr,ban,dtpm,lbtl,osaa,vrk,tsql,tsqm,tlwf,mvks,' \
+                    'vmks,mvn*,vmr*,fkit,fmap,fveh,fwea,wtm-,wkl-,wdt-,wac-,wkd-,vtm-,vkl-,vdt-,vkd-,vkr-,atm-,awn-,' \
+                    'alo-,abr-,ktm-,kkl-,kdt-,kkd-'
+    MAP_STATS = 'mtm-,mwn-,mls-'
