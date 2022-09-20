@@ -1,5 +1,6 @@
 from typing import Dict, Optional, Union
 
+from .schemas import GETLEADERBOARD_RESPONSE_SCHEMA, SEARCHFORPLAYERS_RESPONSE_SCHEMA
 from ..client import AspxClient as BaseAspxClient
 from ..exceptions import InvalidParameterError, InvalidResponseError
 from ..types import ProviderConfig, ParseTarget
@@ -68,17 +69,7 @@ class AspxClient(BaseAspxClient):
 
     @staticmethod
     def is_valid_searchforplayers_response_data(parsed: dict) -> bool:
-        schema: Dict[str, Union[dict, AttributeSchema]] = {
-            'asof': AttributeSchema(type=str, isnumeric=True),
-            'results': AttributeSchema(type=list, children={
-                'n': AttributeSchema(type=str, isnumeric=True),
-                'pid': AttributeSchema(type=str, isnumeric=True),
-                'nick': AttributeSchema(type=str),
-                'score': AttributeSchema(type=str, isnumeric=True)
-            })
-        }
-
-        return is_valid_dict(parsed, schema)
+        return is_valid_dict(parsed, SEARCHFORPLAYERS_RESPONSE_SCHEMA)
 
     def getleaderboard(
             self,
@@ -152,19 +143,7 @@ class AspxClient(BaseAspxClient):
     @staticmethod
     def is_valid_getleaderboard_score_response_data(parsed: dict) -> bool:
         # TODO: Add per-leaderboard validation with respective attributes
-        schema: Dict[str, Union[dict, AttributeSchema]] = {
-            'size': AttributeSchema(type=str, isnumeric=True),
-            'asof': AttributeSchema(type=str, isnumeric=True),
-            'entries': AttributeSchema(type=list, children={
-                'n': AttributeSchema(type=str, isnumeric=True),
-                'pid': AttributeSchema(type=str, isnumeric=True),
-                'nick': AttributeSchema(type=str),
-                'playerrank': AttributeSchema(type=str, isnumeric=True),
-                'countrycode': AttributeSchema(type=str)
-            })
-        }
-
-        return is_valid_dict(parsed, schema)
+        return is_valid_dict(parsed, GETLEADERBOARD_RESPONSE_SCHEMA)
 
     @staticmethod
     def get_provider_config(provider: StatsProvider = StatsProvider.BF2HUB) -> ProviderConfig:
