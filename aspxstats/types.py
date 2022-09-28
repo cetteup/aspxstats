@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from enum import Enum
+from enum import Enum, IntEnum
 from typing import Optional, Dict, List
 
 
@@ -7,6 +7,11 @@ from typing import Optional, Dict, List
 class ProviderConfig:
     base_uri: str
     default_headers: Optional[Dict[str, str]] = None
+
+
+class ResponseValidationMode(IntEnum):
+    LAX = 0
+    STRICT = 1
 
 
 class LineType(str, Enum):

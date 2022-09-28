@@ -5,21 +5,29 @@ from urllib.parse import urljoin
 import requests as requests
 
 from .exceptions import ClientError, InvalidResponseError, Error
-from .types import LineType, Dataset, ParseTarget
+from .types import LineType, Dataset, ParseTarget, ResponseValidationMode
 
 
 class AspxClient:
     base_uri: str
     default_headers: Dict[str, str]
     timeout: float
+    response_validation_mode: ResponseValidationMode
 
     session: requests.Session
     not_found_regex: re.Pattern
 
-    def __init__(self, base_uri: str, default_headers: Dict[str, str], timeout: float):
+    def __init__(
+            self,
+            base_uri: str,
+            default_headers: Dict[str, str],
+            timeout: float,
+            response_validation_mode: ResponseValidationMode
+    ):
         self.base_uri = base_uri
         self.default_headers = default_headers
         self.timeout = timeout
+        self.response_validation_mode = response_validation_mode
 
         self.session = requests.session()
         self.session.headers = default_headers
@@ -52,7 +60,10 @@ class AspxClient:
             raise ClientError(f'Failed to fetch ASPX data: {e}')
 
     @staticmethod
-    def is_valid_aspx_response(raw_data: str) -> Tuple[bool, bool]:
+    def is_valid_aspx_response(
+            raw_data: str,
+            validation_mode: ResponseValidationMode = ResponseValidationMode.STRICT
+    ) -> Tuple[bool, bool]:
         lines = raw_data.split('\n')
         first_line, last_line = lines[0], lines[-1]
 
@@ -64,7 +75,8 @@ class AspxClient:
         actual_length = AspxClient.determine_actual_response_length(lines)
         indicated_length = AspxClient.get_indicated_response_length(last_line)
 
-        response_valid = (first_line.strip() == 'O' and actual_length == indicated_length
+        response_valid = (first_line.strip() == 'O' and
+                          (actual_length == indicated_length or validation_mode is ResponseValidationMode.LAX)
                           and AspxClient.are_response_datasets_valid(raw_data))
 
         """

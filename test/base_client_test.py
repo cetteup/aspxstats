@@ -5,7 +5,7 @@ from unittest.mock import patch
 import requests
 
 from aspxstats.client import AspxClient
-from aspxstats.types import ParseTarget
+from aspxstats.types import ParseTarget, ResponseValidationMode
 from aspxstats.exceptions import Error, ClientError, InvalidResponseError
 
 
@@ -52,7 +52,8 @@ class AspxClientTest(TestCase):
                 {
                     'User-Agent': 'GameSpyHTTP/1.0'
                 },
-                1.0
+                1.0,
+                ResponseValidationMode.STRICT
             )
 
             # WHEN
@@ -80,7 +81,8 @@ class AspxClientTest(TestCase):
                 {
                     'User-Agent': 'GameSpyHTTP/1.0'
                 },
-                1.0
+                1.0,
+                ResponseValidationMode.STRICT
             )
 
             # WHEN/THEN
@@ -114,7 +116,8 @@ class AspxClientTest(TestCase):
                 {
                     'User-Agent': 'GameSpyHTTP/1.0'
                 },
-                1.0
+                1.0,
+                ResponseValidationMode.STRICT
             )
 
             # WHEN/THEN
@@ -160,6 +163,38 @@ class AspxClientTest(TestCase):
 
         # THEN
         self.assertFalse(valid)
+        self.assertFalse(not_found)
+
+    def test_is_valid_aspx_response_incorrect_length(self):
+        # GIVEN
+        raw_data = 'O\n' \
+                   'H\tasof\n' \
+                   'D\t1663441990\n' \
+                   'H\tpid\tnick\tmtm-0\tmwn-0\tmls-0\n' \
+                   'D\t500362798\tmister249\t123\t456\t789\n' \
+                   '$\t10000\t$'
+
+        # WHEN
+        valid, not_found = AspxClient.is_valid_aspx_response(raw_data)
+
+        # THEN
+        self.assertFalse(valid)
+        self.assertFalse(not_found)
+
+    def test_is_valid_aspx_response_incorrect_length_ignored_with_lax_validation(self):
+        # GIVEN
+        raw_data = 'O\n' \
+                   'H\tasof\n' \
+                   'D\t1663441990\n' \
+                   'H\tpid\tnick\tmtm-0\tmwn-0\tmls-0\n' \
+                   'D\t500362798\tmister249\t123\t456\t789\n' \
+                   '$\t10000\t$'
+
+        # WHEN
+        valid, not_found = AspxClient.is_valid_aspx_response(raw_data, ResponseValidationMode.LAX)
+
+        # THEN
+        self.assertTrue(valid)
         self.assertFalse(not_found)
 
     def test_is_valid_aspx_response_bf2hub_incorrect_parameters(self):

@@ -7,16 +7,21 @@ from .types import StatsProvider, SearchMatchType, SearchSortOrder, PlayerSearch
     KitLeaderboardId, LeaderboardEntry, LeaderboardResponse, PlayerinfoKeySet
 from ..client import AspxClient as BaseAspxClient
 from ..exceptions import InvalidParameterError, InvalidResponseError, NotFoundError
-from ..types import ProviderConfig, ParseTarget
+from ..types import ProviderConfig, ParseTarget, ResponseValidationMode
 from ..validation import is_valid_dict, is_numeric
 
 
 class AspxClient(BaseAspxClient):
     provider: StatsProvider
 
-    def __init__(self, provider: StatsProvider = StatsProvider.BF2HUB, timeout: float = 2.0):
+    def __init__(
+            self,
+            provider: StatsProvider = StatsProvider.BF2HUB,
+            timeout: float = 2.0,
+            response_validation_mode: ResponseValidationMode = ResponseValidationMode.LAX
+    ):
         provider_config = AspxClient.get_provider_config(provider)
-        super().__init__(provider_config.base_uri, provider_config.default_headers, timeout)
+        super().__init__(provider_config.base_uri, provider_config.default_headers, timeout, response_validation_mode)
         self.provider = provider
 
     def searchforplayers(
@@ -53,7 +58,7 @@ class AspxClient(BaseAspxClient):
             'sort': sort
         })
 
-        valid_response, _ = self.is_valid_aspx_response(raw_data)
+        valid_response, _ = self.is_valid_aspx_response(raw_data, self.response_validation_mode)
         if not valid_response:
             raise InvalidResponseError(f'{self.provider} returned an invalid searchforplayers response')
 
@@ -126,7 +131,7 @@ class AspxClient(BaseAspxClient):
             'pid': pid
         })
 
-        valid_response, _ = self.is_valid_aspx_response(raw_data)
+        valid_response, _ = self.is_valid_aspx_response(raw_data, self.response_validation_mode)
         if not valid_response:
             raise InvalidResponseError(f'{self.provider} returned an invalid getleaderboard response')
 
@@ -156,7 +161,7 @@ class AspxClient(BaseAspxClient):
             'info': key_set
         })
 
-        valid_response, not_found = self.is_valid_aspx_response(raw_data)
+        valid_response, not_found = self.is_valid_aspx_response(raw_data, self.response_validation_mode)
         if not valid_response and not_found:
             raise NotFoundError(f'No such player on {self.provider}')
         elif not valid_response:
