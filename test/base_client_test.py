@@ -845,3 +845,34 @@ class AspxClientTest(TestCase):
         self.assertRaises(Error, AspxClient.parse_aspx_response, raw_data, [
             ParseTarget(to_root=True),
         ])
+
+    def test_parse_aspx_data_no_error_mismatched_column_number(self):
+        # GIVEN raw data with a dataset containing a row with a column missing
+        raw_data = 'O\n' \
+                   'H\tasof\n' \
+                   'D\t1663441990\n' \
+                   'H\tpid\tnick\tmtm-0\tmwn-0\tmls-0\n' \
+                   'D\t500362798\tmister249\t123\t456\n' \
+                   '$\t68\t$'
+        # The given is data is invalid in purpose, since data like this caused index errors in previous versions
+        valid, _ = AspxClient.is_valid_aspx_response(raw_data)
+        self.assertFalse(valid)
+
+        # WHEN
+        parsed = AspxClient.parse_aspx_response(raw_data, [
+            ParseTarget(to_root=True),
+            ParseTarget('player')
+        ])
+
+        # THEN
+        expected = {
+            'asof': '1663441990',
+            'player': {
+                'pid': '500362798',
+                'nick': 'mister249',
+                'mtm-0': '123',
+                'mwn-0': '456',
+                'mls-0': ''
+            }
+        }
+        self.assertDictEqual(expected, parsed)

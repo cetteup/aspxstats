@@ -202,7 +202,10 @@ class AspxClient:
             elif len(data_lines) == 1 and not target.as_list:
                 # Only a single line of data, add as properties under key (child object)
                 # exception: player search returning only a single player (in that case, force return an array)
-                data[target.to_key] = {key: data_lines[0][index] for (index, key) in enumerate(keys)}
+                data[target.to_key] = {
+                    key: data_lines[0][index] if index < len(data_lines[0]) else ''
+                    for (index, key) in enumerate(keys)
+                }
             elif target.as_list:
                 # Multiple lines of data, create list of dicts
                 data[target.to_key] = [
