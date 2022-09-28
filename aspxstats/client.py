@@ -64,7 +64,8 @@ class AspxClient:
         actual_length = AspxClient.determine_actual_response_length(lines)
         indicated_length = AspxClient.get_indicated_response_length(last_line)
 
-        response_valid = first_line.strip() == 'O' and actual_length == indicated_length
+        response_valid = (first_line.strip() == 'O' and actual_length == indicated_length
+                          and AspxClient.are_response_datasets_valid(raw_data))
 
         """
         Each project handles player not found errors a little different
@@ -104,6 +105,21 @@ class AspxClient:
             return int(indicator_line.strip('\t$'))
         except ValueError:
             return -1
+
+    @staticmethod
+    def are_response_datasets_valid(raw_data: str) -> bool:
+        datasets = AspxClient.extract_datasets_from_response(raw_data)
+        return all(AspxClient.is_valid_dataset(dataset) for dataset in datasets)
+
+    @staticmethod
+    def is_valid_dataset(dataset: Dataset) -> bool:
+        """
+        Ensure that all value lines of a dataset have the same number of columns as the key line
+        :param dataset: dataset to test
+        :return: True, if column numbers match, else False
+        """
+        key_columns = dataset.keys.count('\t')
+        return all(value_line.count('\t') == key_columns for value_line in dataset.data)
 
     @staticmethod
     def parse_aspx_response(raw_data: str, targets: List[ParseTarget]) -> dict:

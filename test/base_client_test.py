@@ -129,6 +129,39 @@ class AspxClientTest(TestCase):
                 }
             )
 
+    def test_is_valid_aspx_response(self):
+        # GIVEN
+        raw_data = 'O\n' \
+                   'H\tasof\n' \
+                   'D\t1663441990\n' \
+                   'H\tpid\tnick\tmtm-0\tmwn-0\tmls-0\n' \
+                   'D\t500362798\tmister249\t123\t456\t789\n' \
+                   '$\t68\t$'
+
+        # WHEN
+        valid, not_found = AspxClient.is_valid_aspx_response(raw_data)
+
+        # THEN
+        self.assertTrue(valid)
+        self.assertFalse(not_found)
+
+    def test_is_valid_aspx_response_mismatched_column_number(self):
+        # GIVEN
+        raw_data = 'O\n' \
+                   'H\tpid\tasof\n' \
+                   'D\t500362798\t1663097863\n' \
+                   'H\taward\tlevel\twhen\tfirst\n' \
+                   'D\t1031105\t1\t1601663082\t0\n' \
+                   'D\t1031105\t2\t1651345901\t0\tan-extra-column\n' \
+                   '$\t89\t$'
+
+        # WHEN
+        valid, not_found = AspxClient.is_valid_aspx_response(raw_data)
+
+        # THEN
+        self.assertFalse(valid)
+        self.assertFalse(not_found)
+
     def test_is_valid_aspx_response_bf2hub_incorrect_parameters(self):
         # GIVEN
         raw_data = 'E\t216\n' \
