@@ -345,13 +345,13 @@ class AspxClientTest(TestCase):
         # WHEN
         parsed = AspxClient.parse_aspx_response(raw_data, [
             ParseTarget(to_root=True),
-            ParseTarget('player')
+            ParseTarget('data')
         ])
 
         # THEN
         expected = {
             'asof': '1663441990',
-            'player': {
+            'data': {
                 'pid': '500362798',
                 'nick': 'mister249',
                 'mtm-0': '123',
@@ -372,14 +372,16 @@ class AspxClientTest(TestCase):
 
         # WHEN
         parsed = AspxClient.parse_aspx_response(raw_data, [
-            ParseTarget(to_root=True)
+            ParseTarget('data')
         ])
 
         # THEN
         expected = {
-            'rank': '13',
-            'chng': '0',
-            'decr': '0'
+            'data': {
+                'rank': '13',
+                'chng': '0',
+                'decr': '0'
+            }
         }
         self.assertDictEqual(expected, parsed)
 
@@ -398,14 +400,14 @@ class AspxClientTest(TestCase):
         # WHEN
         parsed = AspxClient.parse_aspx_response(raw_data, [
             ParseTarget(to_root=True),
-            ParseTarget('awards', as_list=True)
+            ParseTarget('data', as_list=True)
         ])
 
         # THEN
         expected = {
             'pid': '500362798',
             'asof': '1663097863',
-            'awards': [
+            'data': [
                 {
                     'award': '1031105',
                     'level': '1',
@@ -435,14 +437,14 @@ class AspxClientTest(TestCase):
         # WHEN
         parsed = AspxClient.parse_aspx_response(raw_data, [
             ParseTarget(to_root=True),
-            ParseTarget('awards', as_list=True)
+            ParseTarget('data', as_list=True)
         ])
 
         # THEN
         expected = {
             'pid': '500362798',
             'asof': '1663097863',
-            'awards': []
+            'data': []
         }
         self.assertDictEqual(expected, parsed)
 
@@ -464,7 +466,7 @@ class AspxClientTest(TestCase):
         parsed = AspxClient.parse_aspx_response(raw_data, [
             ParseTarget(to_root=True),
             ParseTarget('status'),
-            ParseTarget('unlocks', as_list=True)
+            ParseTarget('data', as_list=True)
         ])
 
         # THEN
@@ -476,7 +478,7 @@ class AspxClientTest(TestCase):
                 'enlisted': '0',
                 'officer': '0'
             },
-            'unlocks': [
+            'data': [
                 {
                     "id": "11",
                     "state": "s"
@@ -701,12 +703,12 @@ class AspxClientTest(TestCase):
 
         # WHEN
         parsed = AspxClient.parse_aspx_response(raw_data, [
-            ParseTarget('maps', as_list=True)
+            ParseTarget('data', as_list=True)
         ])
 
         # THEN
         expected = {
-            'maps': [
+            'data': [
                 {
                     'mapid': '0',
                     'name': 'kubra_dam',
@@ -740,12 +742,12 @@ class AspxClientTest(TestCase):
 
         # WHEN
         parsed = AspxClient.parse_aspx_response(raw_data, [
-            ParseTarget('maps', as_list=True)
+            ParseTarget('data', as_list=True)
         ])
 
         # THEN
         expected = {
-            'maps': [
+            'data': [
                 {
                     'mapid': '0',
                     'name': 'kubra_dam',
@@ -769,12 +771,12 @@ class AspxClientTest(TestCase):
 
         # WHEN
         parsed = AspxClient.parse_aspx_response(raw_data, [
-            ParseTarget('maps', as_list=True)
+            ParseTarget('data', as_list=True)
         ])
 
         # THEN
         expected = {
-            'maps': []
+            'data': []
         }
         self.assertDictEqual(expected, parsed)
 
@@ -790,12 +792,12 @@ class AspxClientTest(TestCase):
 
         # WHEN
         parsed = AspxClient.parse_aspx_response(raw_data, [
-            ParseTarget('pids', as_list=True)
+            ParseTarget('results', as_list=True)
         ])
 
         # THEN
         expected = {
-            'pids': [
+            'results': [
                 {
                     'pid': '81377934'
                 },
@@ -817,12 +819,12 @@ class AspxClientTest(TestCase):
 
         # WHEN
         parsed = AspxClient.parse_aspx_response(raw_data, [
-            ParseTarget('pids', as_list=True)
+            ParseTarget('results', as_list=True)
         ])
 
         # THEN
         expected = {
-            'pids': [
+            'results': [
                 {
                     'pid': '81377934'
                 },
@@ -840,12 +842,12 @@ class AspxClientTest(TestCase):
 
         # WHEN
         parsed = AspxClient.parse_aspx_response(raw_data, [
-            ParseTarget('pids', as_list=True)
+            ParseTarget('results', as_list=True)
         ])
 
         # THEN
         expected = {
-            'pids': []
+            'results': []
         }
         self.assertDictEqual(expected, parsed)
 

@@ -645,7 +645,7 @@ class AspxClientTest(TestCase):
             FixGetplayerinfoTestCase(
                 name='replaces invalid zero values with "0"',
                 parsed={
-                    'player': {
+                    'data': {
                         'tvcr': '',
                         'topr': ' ',
                         'mvrs': 'NOT VAILABLE',
@@ -653,7 +653,7 @@ class AspxClientTest(TestCase):
                     }
                 },
                 expected={
-                    'player': {
+                    'data': {
                         'tvcr': '0',
                         'topr': '0',
                         'mvrs': '0',
@@ -664,7 +664,7 @@ class AspxClientTest(TestCase):
             FixGetplayerinfoTestCase(
                 name='does not overwrite valid existing values',
                 parsed={
-                    'player': {
+                    'data': {
                         'tvcr': '1000',
                         'topr': '2000',
                         'mvrs': '3000',
@@ -672,7 +672,7 @@ class AspxClientTest(TestCase):
                     }
                 },
                 expected={
-                    'player': {
+                    'data': {
                         'tvcr': '1000',
                         'topr': '2000',
                         'mvrs': '3000',
@@ -683,7 +683,7 @@ class AspxClientTest(TestCase):
             FixGetplayerinfoTestCase(
                 name='ignores any other keys',
                 parsed={
-                    'player': {
+                    'data': {
                         'tvcr': '',
                         'topr': ' ',
                         'mvrs': 'NOT VAILABLE',
@@ -693,7 +693,7 @@ class AspxClientTest(TestCase):
                     'some-other-key': 'some-value'
                 },
                 expected={
-                    'player': {
+                    'data': {
                         'tvcr': '0',
                         'topr': '0',
                         'mvrs': '0',
@@ -706,13 +706,13 @@ class AspxClientTest(TestCase):
             FixGetplayerinfoTestCase(
                 name='does not add missing keys',
                 parsed={
-                    'player': {
+                    'data': {
                         'scor': '1000',
                         'tvcr': ''
                     }
                 },
                 expected={
-                    'player': {
+                    'data': {
                         'scor': '1000',
                         'tvcr': '0'
                     }
@@ -730,11 +730,11 @@ class AspxClientTest(TestCase):
             FixGetplayerinfoTestCase(
                 name='does nothing if player key does not contain a dict',
                 parsed={
-                    'player': 'not-a-dict',
+                    'data': 'not-a-dict',
                     'some-other-key': 'some-value'
                 },
                 expected={
-                    'player': 'not-a-dict',
+                    'data': 'not-a-dict',
                     'some-other-key': 'some-value'
                 }
             ),

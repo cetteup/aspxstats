@@ -26,7 +26,7 @@ GETLEADERBOARD_RESPONSE_SCHEMA: Dict[str, Union[dict, AttributeSchema]] = {
 
 GETPLAYERINFO_GENERAL_STATS_RESPONSE_SCHEMA: Dict[str, Union[dict, AttributeSchema]] = {
     'asof': AttributeSchema(type=str, is_numeric=True),
-    'player': {
+    'data': {
         'pid': AttributeSchema(type=str, is_numeric=True),
         'nick': AttributeSchema(type=str),
         'scor': AttributeSchema(type=str, is_numeric=True),
@@ -268,7 +268,7 @@ GETPLAYERINFO_GENERAL_STATS_RESPONSE_SCHEMA: Dict[str, Union[dict, AttributeSche
 
 GETPLAYERINFO_MAP_STATS_RESPONSE_SCHEMA: Dict[str, Union[dict, AttributeSchema]] = {
     'asof': AttributeSchema(type=str, is_numeric=True),
-    'player': {
+    'data': {
         'pid': AttributeSchema(type=str, is_numeric=True),
         'nick': AttributeSchema(type=str),
         'mtm-0': AttributeSchema(type=str, is_numeric=True),

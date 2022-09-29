@@ -169,7 +169,7 @@ class AspxClient(BaseAspxClient):
 
         parsed = self.parse_aspx_response(raw_data, [
             ParseTarget(to_root=True),
-            ParseTarget('player')
+            ParseTarget('data')
         ])
 
         parsed = self.fix_getplayerinfo_zero_values(parsed)
@@ -183,7 +183,7 @@ class AspxClient(BaseAspxClient):
     @staticmethod
     def fix_getplayerinfo_zero_values(parsed: dict) -> dict:
         # Can't fix any player attributes if the key is missing/of wrong type
-        if not isinstance(parsed.get('player'), dict):
+        if not isinstance(parsed.get('data'), dict):
             return parsed
 
         """
@@ -198,9 +198,9 @@ class AspxClient(BaseAspxClient):
         => replace any invalid values with 0 (but don't add it if the key is missing)
         """
         for key in ['tvcr', 'topr', 'mvrs', 'vmrs']:
-            value = parsed['player'].get(key)
+            value = parsed['data'].get(key)
             if value is not None and not is_numeric(value):
-                parsed['player'][key] = '0'
+                parsed['data'][key] = '0'
 
         return parsed
 
