@@ -396,7 +396,7 @@ class AspxClientTest(TestCase):
         # GIVEN
         parsed = {
             'asof': '1663620931',
-            'player': {
+            'data': {
                 'pid': '500362798', 'nick': 'mister249', 'scor': '86469', 'jond': '1601656220', 'wins': '630',
                 'loss': '575', 'mode0': '1206', 'mode1': '0', 'mode2': '0', 'time': '1319254', 'smoc': '0',
                 'cmsc': '38689868', 'osaa': '28.402304270517', 'kill': '30103', 'kila': '4578', 'deth': '12303',
@@ -477,7 +477,7 @@ class AspxClientTest(TestCase):
             # Test with a copy
             parsed_copy = {
                 'asof': parsed['asof'],
-                'player': parsed['player'].copy()
+                'data': parsed['data'].copy()
             }
 
             # Attribute should be a string or dict => test with an int
@@ -496,16 +496,16 @@ class AspxClientTest(TestCase):
             # THEN
             self.assertFalse(valid, f'"{key}" missing failed')
 
-        for key in parsed['player'].keys():
+        for key in parsed['data'].keys():
             # Test with a copy
             parsed_copy = {
                 'asof': parsed['asof'],
-                'player': parsed['player'].copy()
+                'data': parsed['data'].copy()
             }
 
             # Every attribute should be a string => test with a non-string
             # GIVEN
-            parsed_copy['player'][key] = 123456
+            parsed_copy['data'][key] = 123456
             # WHEN
             valid = AspxClient.is_valid_getplayerinfo_response_data(PlayerinfoKeySet.GENERAL_STATS, parsed_copy)
             # THEN
@@ -513,7 +513,7 @@ class AspxClientTest(TestCase):
 
             # Every attribute must be present => test without it
             # GIVEN
-            del parsed_copy['player'][key]
+            del parsed_copy['data'][key]
             # WHEN
             valid = AspxClient.is_valid_getplayerinfo_response_data(PlayerinfoKeySet.GENERAL_STATS, parsed_copy)
             # THEN
@@ -522,7 +522,7 @@ class AspxClientTest(TestCase):
             if key in numeric_keys:
                 # Attribute should be numeric => test with a non-numeric-string
                 # GIVEN
-                parsed_copy['player'][key] = 'not-a-numeric-string'
+                parsed_copy['data'][key] = 'not-a-numeric-string'
                 # WHEN
                 valid = AspxClient.is_valid_getplayerinfo_response_data(PlayerinfoKeySet.GENERAL_STATS, parsed_copy)
                 # THEN
@@ -531,7 +531,7 @@ class AspxClientTest(TestCase):
             if key in floaty_keys:
                 # Attribute should be floaty => test with a non-floaty-string
                 # GIVEN
-                parsed_copy['player'][key] = 'not-a-floaty-string'
+                parsed_copy['data'][key] = 'not-a-floaty-string'
                 # WHEN
                 valid = AspxClient.is_valid_getplayerinfo_response_data(PlayerinfoKeySet.GENERAL_STATS, parsed_copy)
                 # THEN
@@ -541,7 +541,7 @@ class AspxClientTest(TestCase):
         # GIVEN
         parsed = {
             'asof': '1663620931',
-            'player': {
+            'data': {
                 'pid': '500362798', 'nick': 'mister249', 'mtm-0': '101256', 'mtm-1': '21518', 'mtm-2': '13337',
                 'mtm-3': '4156', 'mtm-4': '1276553', 'mtm-5': '17310', 'mtm-6': '63131', 'mtm-100': '48635',
                 'mtm-101': '58559', 'mtm-102': '198609', 'mtm-103': '13690', 'mtm-104': '0', 'mtm-105': '5716',
@@ -582,7 +582,7 @@ class AspxClientTest(TestCase):
             # Test with a copy
             parsed_copy = {
                 'asof': parsed['asof'],
-                'player': parsed['player'].copy()
+                'data': parsed['data'].copy()
             }
 
             # Attribute should be a string or dict => test with an int
@@ -601,16 +601,16 @@ class AspxClientTest(TestCase):
             # THEN
             self.assertFalse(valid, f'"{key}" missing failed')
 
-        for key in parsed['player'].keys():
+        for key in parsed['data'].keys():
             # Test with a copy
             parsed_copy = {
                 'asof': parsed['asof'],
-                'player': parsed['player'].copy()
+                'data': parsed['data'].copy()
             }
 
             # Every attribute should be a string => test with a non-string
             # GIVEN
-            parsed_copy['player'][key] = 123456
+            parsed_copy['data'][key] = 123456
             # WHEN
             valid = AspxClient.is_valid_getplayerinfo_response_data(PlayerinfoKeySet.MAP_STATS, parsed_copy)
             # THEN
@@ -618,7 +618,7 @@ class AspxClientTest(TestCase):
 
             # Every attribute must be present => test without it
             # GIVEN
-            del parsed_copy['player'][key]
+            del parsed_copy['data'][key]
             # WHEN
             valid = AspxClient.is_valid_getplayerinfo_response_data(PlayerinfoKeySet.MAP_STATS, parsed_copy)
             # THEN
@@ -627,7 +627,7 @@ class AspxClientTest(TestCase):
             if key in numeric_keys:
                 # Attribute should be numeric => test with a non-numeric-string
                 # GIVEN
-                parsed_copy['player'][key] = 'not-a-numeric-string'
+                parsed_copy['data'][key] = 'not-a-numeric-string'
                 # WHEN
                 valid = AspxClient.is_valid_getplayerinfo_response_data(PlayerinfoKeySet.MAP_STATS, parsed_copy)
                 # THEN
