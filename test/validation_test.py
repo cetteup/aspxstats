@@ -2,7 +2,8 @@ from dataclasses import dataclass
 from typing import Dict, Union, List, Any
 from unittest import TestCase
 
-from aspxstats.validation import AttributeSchema, is_valid_dict
+from aspxstats.validation import is_valid_dict
+from aspxstats.schema import AttributeSchema
 
 
 class ValidationTest(TestCase):

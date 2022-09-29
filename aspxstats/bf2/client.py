@@ -7,6 +7,7 @@ from .types import StatsProvider, SearchMatchType, SearchSortOrder, PlayerSearch
     KitLeaderboardId, LeaderboardEntry, LeaderboardResponse, PlayerinfoKeySet
 from ..client import AspxClient as BaseAspxClient
 from ..exceptions import InvalidParameterError, InvalidResponseError, NotFoundError
+from ..parsing import parse_dict_values
 from ..types import ProviderConfig, ParseTarget, ResponseValidationMode
 from ..validation import is_valid_dict, is_numeric
 
@@ -30,7 +31,7 @@ class AspxClient(BaseAspxClient):
             where: SearchMatchType = SearchMatchType.EQUALS,
             sort: SearchSortOrder = SearchSortOrder.ASCENDING
     ) -> PlayerSearchResponse:
-        parsed = self.searchforplayers_raw(nick, where, sort)
+        parsed = self.searchforplayers_dict(nick, where, sort)
 
         # We can safely access keys and parse integers directly here,
         # since we already validated all used are present and all relevant strings are numeric
@@ -38,15 +39,15 @@ class AspxClient(BaseAspxClient):
             asof=int(parsed['asof']),
             results=[
                 PlayerSearchResult(
-                    n=int(result['n']),
+                    n=result['n'],
                     nick=result['nick'],
-                    pid=int(result['pid']),
-                    score=int(result['score'])
+                    pid=result['pid'],
+                    score=result['score']
                 ) for result in parsed['results']
             ]
         )
 
-    def searchforplayers_raw(
+    def searchforplayers_dict(
             self,
             nick: str,
             where: SearchMatchType = SearchMatchType.EQUALS,
@@ -71,11 +72,15 @@ class AspxClient(BaseAspxClient):
         if not valid_data:
             raise InvalidResponseError(f'{self.provider} returned invalid searchforplayers response data')
 
-        return parsed
+        return self.parse_searchforplayers_response_values(parsed)
 
     @staticmethod
     def is_valid_searchforplayers_response_data(parsed: dict) -> bool:
         return is_valid_dict(parsed, SEARCHFORPLAYERS_RESPONSE_SCHEMA)
+
+    @staticmethod
+    def parse_searchforplayers_response_values(parsed: dict) -> dict:
+        return parse_dict_values(parsed, SEARCHFORPLAYERS_RESPONSE_SCHEMA)
 
     def getleaderboard(
             self,
@@ -91,23 +96,23 @@ class AspxClient(BaseAspxClient):
             after: int = 19,
             pid: Optional[int] = None
     ) -> LeaderboardResponse:
-        parsed = self.getleaderboard_raw(leaderboard_type, leaderboard_id, pos, before, after, pid)
+        parsed = self.getleaderboard_dict(leaderboard_type, leaderboard_id, pos, before, after, pid)
 
         return LeaderboardResponse(
             size=int(parsed['size']),
             asof=int(parsed['asof']),
             entries=[
                 LeaderboardEntry(
-                    n=int(entry['n']),
-                    pid=int(entry['pid']),
+                    n=entry['n'],
+                    pid=entry['pid'],
                     nick=entry['nick'],
-                    rank=int(entry['playerrank']),
+                    rank=entry['playerrank'],
                     country_code=entry['countrycode']
                 ) for entry in parsed['entries']
             ]
         )
 
-    def getleaderboard_raw(
+    def getleaderboard_dict(
             self,
             leaderboard_type: LeaderboardType = LeaderboardType.SCORE,
             leaderboard_id: Union[
@@ -144,14 +149,18 @@ class AspxClient(BaseAspxClient):
         if not valid_data:
             raise InvalidResponseError(f'{self.provider} returned invalid getleaderboard response data')
 
-        return parsed
+        return self.parse_getleaderboard_response_values(parsed)
 
     @staticmethod
     def is_valid_getleaderboard_response_data(parsed: dict) -> bool:
         # TODO: Add per-leaderboard validation with respective attributes
         return is_valid_dict(parsed, GETLEADERBOARD_RESPONSE_SCHEMA)
 
-    def getplayerinfo_raw(
+    @staticmethod
+    def parse_getleaderboard_response_values(parsed: dict) -> dict:
+        return parse_dict_values(parsed, GETLEADERBOARD_RESPONSE_SCHEMA)
+
+    def getplayerinfo_dict(
             self,
             pid: int,
             key_set: PlayerinfoKeySet = PlayerinfoKeySet.GENERAL_STATS
@@ -178,7 +187,7 @@ class AspxClient(BaseAspxClient):
         if not valid_data:
             raise InvalidResponseError(f'{self.provider} returned invalid getplayerinfo response data')
 
-        return parsed
+        return self.parse_getplayerinfo_response_values(key_set, parsed)
 
     @staticmethod
     def fix_getplayerinfo_zero_values(parsed: dict) -> dict:
@@ -210,6 +219,13 @@ class AspxClient(BaseAspxClient):
             return is_valid_dict(parsed, GETPLAYERINFO_GENERAL_STATS_RESPONSE_SCHEMA)
         else:
             return is_valid_dict(parsed, GETPLAYERINFO_MAP_STATS_RESPONSE_SCHEMA)
+
+    @staticmethod
+    def parse_getplayerinfo_response_values(key_set: PlayerinfoKeySet, parsed: dict) -> dict:
+        if key_set == PlayerinfoKeySet.GENERAL_STATS:
+            return parse_dict_values(parsed, GETPLAYERINFO_GENERAL_STATS_RESPONSE_SCHEMA)
+        else:
+            return parse_dict_values(parsed, GETPLAYERINFO_MAP_STATS_RESPONSE_SCHEMA)
 
     @staticmethod
     def get_provider_config(provider: StatsProvider = StatsProvider.BF2HUB) -> ProviderConfig:

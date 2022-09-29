@@ -19,7 +19,7 @@ def searchforplayers(
         return client.searchforplayers(nick, where, sort)
 
 
-def searchforplayers_raw(
+def searchforplayers_dict(
         nick: str,
         where: SearchMatchType = SearchMatchType.EQUALS,
         sort: SearchSortOrder = SearchSortOrder.ASCENDING,
@@ -28,7 +28,7 @@ def searchforplayers_raw(
         response_validation_mode: ResponseValidationMode = ResponseValidationMode.LAX
 ) -> dict:
     with AspxClient(provider, timeout, response_validation_mode) as client:
-        return client.searchforplayers_raw(nick, where, sort)
+        return client.searchforplayers_dict(nick, where, sort)
 
 
 def getleaderboard(
@@ -51,7 +51,7 @@ def getleaderboard(
         return client.getleaderboard(leaderboard_type, leaderboard_id, pos, before, after, pid)
 
 
-def getleaderboard_raw(
+def getleaderboard_dict(
         leaderboard_type: LeaderboardType = LeaderboardType.SCORE,
         leaderboard_id: Union[
             ScoreLeaderboardId,
@@ -68,10 +68,10 @@ def getleaderboard_raw(
         response_validation_mode: ResponseValidationMode = ResponseValidationMode.LAX
 ) -> dict:
     with AspxClient(provider, timeout, response_validation_mode) as client:
-        return client.getleaderboard_raw(leaderboard_type, leaderboard_id, pos, before, after, pid)
+        return client.getleaderboard_dict(leaderboard_type, leaderboard_id, pos, before, after, pid)
 
 
-def getplayerinfo_raw(
+def getplayerinfo_dict(
         pid: int,
         key_set: PlayerinfoKeySet = PlayerinfoKeySet.GENERAL_STATS,
         provider: StatsProvider = StatsProvider.BF2HUB,
@@ -79,4 +79,4 @@ def getplayerinfo_raw(
         response_validation_mode: ResponseValidationMode = ResponseValidationMode.LAX
 ) -> dict:
     with AspxClient(provider, timeout, response_validation_mode) as client:
-        return client.getplayerinfo_raw(pid, key_set)
+        return client.getplayerinfo_dict(pid, key_set)

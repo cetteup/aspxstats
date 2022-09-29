@@ -1,15 +1,15 @@
 from .client import AspxClient
-from .fetch import searchforplayers, searchforplayers_raw, getleaderboard, getleaderboard_raw, getplayerinfo_raw
+from .fetch import searchforplayers, searchforplayers_dict, getleaderboard, getleaderboard_dict, getplayerinfo_dict
 from .types import StatsProvider, SearchMatchType, SearchSortOrder, LeaderboardType, ScoreLeaderboardId, \
     WeaponLeaderboardId, VehicleLeaderboardId, KitLeaderboardId, PlayerinfoKeySet
 
 __all__ = [
     'AspxClient',
     'searchforplayers',
-    'searchforplayers_raw',
+    'searchforplayers_dict',
     'getleaderboard',
-    'getleaderboard_raw',
-    'getplayerinfo_raw',
+    'getleaderboard_dict',
+    'getplayerinfo_dict',
     'StatsProvider',
     'SearchMatchType',
     'SearchSortOrder',

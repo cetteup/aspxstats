@@ -1,14 +1,6 @@
-from dataclasses import dataclass
-from typing import Dict, Union, Optional
+from typing import Dict, Union
 
-
-@dataclass
-class AttributeSchema:
-    type: type
-    is_numeric: bool = False
-    is_floaty: bool = False
-    is_ratio: bool = False
-    children: Optional[Dict[str, Union[dict, 'AttributeSchema']]] = None
+from .schema import AttributeSchema
 
 
 def is_valid_dict(data: dict, schema: Dict[str, Union[dict, AttributeSchema]]) -> bool:

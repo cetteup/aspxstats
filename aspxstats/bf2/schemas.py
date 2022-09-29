@@ -1,6 +1,6 @@
 from typing import Dict, Union
 
-from aspxstats.validation import AttributeSchema
+from ..schema import AttributeSchema
 
 SEARCHFORPLAYERS_RESPONSE_SCHEMA: Dict[str, Union[dict, AttributeSchema]] = {
     'asof': AttributeSchema(type=str, is_numeric=True),
