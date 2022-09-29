@@ -41,7 +41,7 @@ class AspxClient:
     def close(self) -> None:
         self.session.close()
 
-    def get_aspx_data(self, endpoint: str, params: Optional[Dict[str, str]] = None) -> str:
+    def get_aspx_data(self, endpoint: str, params: Optional[Dict[str, Optional[str]]] = None) -> str:
         """
         Fetch raw, unparsed data from a .aspx endpoint
         :param endpoint: (relative) URL of the endpoint

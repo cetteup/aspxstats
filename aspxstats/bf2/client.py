@@ -130,11 +130,11 @@ class AspxClient(BaseAspxClient):
         # TODO Validate type and id combinations
         raw_data = self.get_aspx_data('getleaderboard.aspx', {
             'type': leaderboard_type,
-            'id': leaderboard_id,
-            'pos': pos,
-            'before': before,
-            'after': after,
-            'pid': pid
+            'id': str(leaderboard_id.value),
+            'pos': str(pos),
+            'before': str(before),
+            'after': str(after),
+            'pid': str(pid) if pid is not None else None
         })
 
         valid_response, _ = self.is_valid_aspx_response(raw_data, self.response_validation_mode)
@@ -167,7 +167,7 @@ class AspxClient(BaseAspxClient):
             key_set: PlayerinfoKeySet = PlayerinfoKeySet.GENERAL_STATS
     ) -> dict:
         raw_data = self.get_aspx_data('getplayerinfo.aspx', {
-            'pid': pid,
+            'pid': str(pid),
             'info': key_set
         })
 
