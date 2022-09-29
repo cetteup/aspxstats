@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional, Dict, Union
+from typing import Optional, Dict, Union, TypeVar
 
 
 @dataclass
@@ -9,3 +9,6 @@ class AttributeSchema:
     is_floaty: bool = False
     is_ratio: bool = False
     children: Optional[Dict[str, Union[dict, 'AttributeSchema']]] = None
+
+
+DictSchema = TypeVar('DictSchema', bound=Dict[str, Union[dict, AttributeSchema]])

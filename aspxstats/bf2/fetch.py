@@ -80,3 +80,42 @@ def getplayerinfo_dict(
 ) -> dict:
     with AspxClient(provider, timeout, response_validation_mode) as client:
         return client.getplayerinfo_dict(pid, key_set)
+
+
+def getrankinfo_dict(
+        pid: int,
+        provider: StatsProvider = StatsProvider.BF2HUB,
+        timeout: float = 2.0,
+        response_validation_mode: ResponseValidationMode = ResponseValidationMode.LAX
+) -> dict:
+    with AspxClient(provider, timeout, response_validation_mode) as client:
+        return client.getrankinfo_dict(pid)
+
+
+def getawardsinfo_dict(
+        pid: int,
+        provider: StatsProvider = StatsProvider.BF2HUB,
+        timeout: float = 2.0,
+        response_validation_mode: ResponseValidationMode = ResponseValidationMode.LAX
+) -> dict:
+    with AspxClient(provider, timeout, response_validation_mode) as client:
+        return client.getawardsinfo_dict(pid)
+
+
+def getunlocksinfo_dict(
+        pid: int,
+        provider: StatsProvider = StatsProvider.BF2HUB,
+        timeout: float = 2.0,
+        response_validation_mode: ResponseValidationMode = ResponseValidationMode.LAX
+) -> dict:
+    with AspxClient(provider, timeout, response_validation_mode) as client:
+        return client.getunlocksinfo_dict(pid)
+
+
+def getbackendinfo_dict(
+        provider: StatsProvider = StatsProvider.BF2HUB,
+        timeout: float = 2.0,
+        response_validation_mode: ResponseValidationMode = ResponseValidationMode.LAX
+) -> dict:
+    with AspxClient(provider, timeout, response_validation_mode) as client:
+        return client.getbackendinfo_dict()

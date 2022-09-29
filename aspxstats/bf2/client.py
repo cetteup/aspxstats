@@ -1,7 +1,8 @@
 from typing import Dict, Optional, Union
 
 from .schemas import GETLEADERBOARD_RESPONSE_SCHEMA, SEARCHFORPLAYERS_RESPONSE_SCHEMA, \
-    GETPLAYERINFO_GENERAL_STATS_RESPONSE_SCHEMA, GETPLAYERINFO_MAP_STATS_RESPONSE_SCHEMA
+    GETPLAYERINFO_GENERAL_STATS_RESPONSE_SCHEMA, GETPLAYERINFO_MAP_STATS_RESPONSE_SCHEMA, GETRANKINFO_RESPONSE_SCHEMA, \
+    GETAWARDSINFO_RESPONSE_SCHEMA, GETUNLOCKSINFO_RESPONSE_SCHEMA, GETBACKENDINFO_RESPONSE_SCHEMA
 from .types import StatsProvider, SearchMatchType, SearchSortOrder, PlayerSearchResult, \
     PlayerSearchResponse, LeaderboardType, ScoreLeaderboardId, WeaponLeaderboardId, VehicleLeaderboardId, \
     KitLeaderboardId, LeaderboardEntry, LeaderboardResponse, PlayerinfoKeySet
@@ -226,6 +227,133 @@ class AspxClient(BaseAspxClient):
             return parse_dict_values(parsed, GETPLAYERINFO_GENERAL_STATS_RESPONSE_SCHEMA)
         else:
             return parse_dict_values(parsed, GETPLAYERINFO_MAP_STATS_RESPONSE_SCHEMA)
+
+    def getrankinfo_dict(
+            self,
+            pid: int
+    ) -> dict:
+        raw_data = self.get_aspx_data('getrankinfo.aspx', {
+            'pid': str(pid)
+        })
+
+        valid_response, not_found = self.is_valid_aspx_response(raw_data, self.response_validation_mode)
+        if not valid_response and not_found:
+            raise NotFoundError(f'No such player on {self.provider}')
+        elif not valid_response:
+            raise InvalidResponseError(f'{self.provider} returned an invalid getrankinfo response')
+
+        parsed = self.parse_aspx_response(raw_data, [
+            ParseTarget('data')
+        ])
+
+        valid_data = self.is_valid_getrankinfo_response_data(parsed)
+        if not valid_data:
+            raise InvalidResponseError(f'{self.provider} returned invalid getrankinfo response data')
+
+        return self.parse_getrankinfo_response_values(parsed)
+
+    @staticmethod
+    def is_valid_getrankinfo_response_data(parsed: dict) -> bool:
+        return is_valid_dict(parsed, GETRANKINFO_RESPONSE_SCHEMA)
+
+    @staticmethod
+    def parse_getrankinfo_response_values(parsed: dict) -> dict:
+        return parse_dict_values(parsed, GETRANKINFO_RESPONSE_SCHEMA)
+
+    def getawardsinfo_dict(
+            self,
+            pid: int
+    ) -> dict:
+        raw_data = self.get_aspx_data('getawardsinfo.aspx', {
+            'pid': str(pid)
+        })
+
+        valid_response, not_found = self.is_valid_aspx_response(raw_data, self.response_validation_mode)
+        if not valid_response and not_found:
+            raise NotFoundError(f'No such player on {self.provider}')
+        elif not valid_response:
+            raise InvalidResponseError(f'{self.provider} returned an invalid getawardsinfo response')
+
+        parsed = self.parse_aspx_response(raw_data, [
+            ParseTarget(to_root=True),
+            ParseTarget('data', as_list=True)
+        ])
+
+        valid_data = self.is_valid_getawardsinfo_response_data(parsed)
+        if not valid_data:
+            raise InvalidResponseError(f'{self.provider} returned invalid getawardsinfo response data')
+
+        return self.parse_getawardsinfo_response_values(parsed)
+
+    @staticmethod
+    def is_valid_getawardsinfo_response_data(parsed: dict) -> bool:
+        return is_valid_dict(parsed, GETAWARDSINFO_RESPONSE_SCHEMA)
+
+    @staticmethod
+    def parse_getawardsinfo_response_values(parsed: dict) -> dict:
+        return parse_dict_values(parsed, GETAWARDSINFO_RESPONSE_SCHEMA)
+
+    def getunlocksinfo_dict(
+            self,
+            pid: int
+    ) -> dict:
+        raw_data = self.get_aspx_data('getunlocksinfo.aspx', {
+            'pid': str(pid)
+        })
+
+        valid_response, not_found = self.is_valid_aspx_response(raw_data, self.response_validation_mode)
+        if not valid_response and not_found:
+            raise NotFoundError(f'No such player on {self.provider}')
+        elif not valid_response:
+            raise InvalidResponseError(f'{self.provider} returned an invalid getunlocksinfo response')
+
+        parsed = self.parse_aspx_response(raw_data, [
+            ParseTarget(to_root=True),
+            ParseTarget('status'),
+            ParseTarget('data', as_list=True)
+        ])
+
+        valid_data = self.is_valid_getunlocksinfo_response_data(parsed)
+        if not valid_data:
+            raise InvalidResponseError(f'{self.provider} returned invalid getunlocksinfo response data')
+
+        return self.parse_getunlocksinfo_response_values(parsed)
+
+    @staticmethod
+    def is_valid_getunlocksinfo_response_data(parsed: dict) -> bool:
+        return is_valid_dict(parsed, GETUNLOCKSINFO_RESPONSE_SCHEMA)
+
+    @staticmethod
+    def parse_getunlocksinfo_response_values(parsed: dict) -> dict:
+        return parse_dict_values(parsed, GETUNLOCKSINFO_RESPONSE_SCHEMA)
+
+    def getbackendinfo_dict(
+            self,
+    ) -> dict:
+        raw_data = self.get_aspx_data('getbackendinfo.aspx')
+
+        valid_response, _ = self.is_valid_aspx_response(raw_data, self.response_validation_mode)
+        if not valid_response:
+            raise InvalidResponseError(f'{self.provider} returned an invalid getbackendinfo response')
+
+        parsed = self.parse_aspx_response(raw_data, [
+            ParseTarget(to_root=True),
+            ParseTarget('unlocks', as_list=True)
+        ])
+
+        valid_data = self.is_valid_getbackendinfo_response_data(parsed)
+        if not valid_data:
+            raise InvalidResponseError(f'{self.provider} returned invalid getbackendinfo response data')
+
+        return self.parse_getbackendinfo_response_values(parsed)
+
+    @staticmethod
+    def is_valid_getbackendinfo_response_data(parsed: dict) -> bool:
+        return is_valid_dict(parsed, GETBACKENDINFO_RESPONSE_SCHEMA)
+
+    @staticmethod
+    def parse_getbackendinfo_response_values(parsed: dict) -> dict:
+        return parse_dict_values(parsed, GETBACKENDINFO_RESPONSE_SCHEMA)
 
     @staticmethod
     def get_provider_config(provider: StatsProvider = StatsProvider.BF2HUB) -> ProviderConfig:

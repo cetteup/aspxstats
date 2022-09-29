@@ -1,8 +1,6 @@
-from typing import Dict, Union
+from ..schema import AttributeSchema, DictSchema
 
-from ..schema import AttributeSchema
-
-SEARCHFORPLAYERS_RESPONSE_SCHEMA: Dict[str, Union[dict, AttributeSchema]] = {
+SEARCHFORPLAYERS_RESPONSE_SCHEMA: DictSchema = {
     'asof': AttributeSchema(type=str, is_numeric=True),
     'results': AttributeSchema(type=list, children={
         'n': AttributeSchema(type=str, is_numeric=True),
@@ -12,7 +10,7 @@ SEARCHFORPLAYERS_RESPONSE_SCHEMA: Dict[str, Union[dict, AttributeSchema]] = {
     })
 }
 
-GETLEADERBOARD_RESPONSE_SCHEMA: Dict[str, Union[dict, AttributeSchema]] = {
+GETLEADERBOARD_RESPONSE_SCHEMA: DictSchema = {
     'size': AttributeSchema(type=str, is_numeric=True),
     'asof': AttributeSchema(type=str, is_numeric=True),
     'entries': AttributeSchema(type=list, children={
@@ -24,7 +22,7 @@ GETLEADERBOARD_RESPONSE_SCHEMA: Dict[str, Union[dict, AttributeSchema]] = {
     })
 }
 
-GETPLAYERINFO_GENERAL_STATS_RESPONSE_SCHEMA: Dict[str, Union[dict, AttributeSchema]] = {
+GETPLAYERINFO_GENERAL_STATS_RESPONSE_SCHEMA: DictSchema = {
     'asof': AttributeSchema(type=str, is_numeric=True),
     'data': {
         'pid': AttributeSchema(type=str, is_numeric=True),
@@ -266,7 +264,7 @@ GETPLAYERINFO_GENERAL_STATS_RESPONSE_SCHEMA: Dict[str, Union[dict, AttributeSche
     }
 }
 
-GETPLAYERINFO_MAP_STATS_RESPONSE_SCHEMA: Dict[str, Union[dict, AttributeSchema]] = {
+GETPLAYERINFO_MAP_STATS_RESPONSE_SCHEMA: DictSchema = {
     'asof': AttributeSchema(type=str, is_numeric=True),
     'data': {
         'pid': AttributeSchema(type=str, is_numeric=True),
@@ -359,4 +357,48 @@ GETPLAYERINFO_MAP_STATS_RESPONSE_SCHEMA: Dict[str, Union[dict, AttributeSchema]]
         'mls-307': AttributeSchema(type=str, is_numeric=True),
         'mls-601': AttributeSchema(type=str, is_numeric=True)
     }
+}
+
+GETRANKINFO_RESPONSE_SCHEMA: DictSchema = {
+    'data': {
+        'rank': AttributeSchema(type=str, is_numeric=True),
+        'chng': AttributeSchema(type=str, is_numeric=True),
+        'decr': AttributeSchema(type=str, is_numeric=True)
+    }
+}
+
+GETAWARDSINFO_RESPONSE_SCHEMA: DictSchema = {
+    'pid': AttributeSchema(type=str, is_numeric=True),
+    'asof': AttributeSchema(type=str, is_numeric=True),
+    'data': AttributeSchema(type=list, children={
+        'award': AttributeSchema(type=str, is_numeric=True),
+        'level': AttributeSchema(type=str, is_numeric=True),
+        'when': AttributeSchema(type=str, is_numeric=True),
+        'first': AttributeSchema(type=str, is_numeric=True)
+    })
+}
+
+GETUNLOCKSINFO_RESPONSE_SCHEMA: DictSchema = {
+    'pid': AttributeSchema(type=str, is_numeric=True),
+    'nick': AttributeSchema(type=str),
+    'asof': AttributeSchema(type=str, is_numeric=True),
+    'status': {
+        'enlisted': AttributeSchema(type=str, is_numeric=True),
+        'officer': AttributeSchema(type=str, is_numeric=True)
+    },
+    'data': AttributeSchema(type=list, children={
+        "id": AttributeSchema(type=str, is_numeric=True),
+        "state": AttributeSchema(type=str)
+    })
+}
+
+GETBACKENDINFO_RESPONSE_SCHEMA: DictSchema = {
+    'ver': AttributeSchema(type=str),
+    'now': AttributeSchema(type=str, is_numeric=True),
+    'unlocks': AttributeSchema(type=list, children={
+        'id': AttributeSchema(type=str, is_numeric=True),
+        'kit': AttributeSchema(type=str, is_numeric=True),
+        'name': AttributeSchema(type=str),
+        'descr': AttributeSchema(type=str)
+    })
 }
