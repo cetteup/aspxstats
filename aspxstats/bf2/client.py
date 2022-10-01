@@ -216,14 +216,14 @@ class AspxClient(BaseAspxClient):
 
     @staticmethod
     def is_valid_getplayerinfo_response_data(key_set: PlayerinfoKeySet, parsed: dict) -> bool:
-        if key_set == PlayerinfoKeySet.GENERAL_STATS:
+        if key_set is PlayerinfoKeySet.GENERAL_STATS:
             return is_valid_dict(parsed, GETPLAYERINFO_GENERAL_STATS_RESPONSE_SCHEMA)
         else:
             return is_valid_dict(parsed, GETPLAYERINFO_MAP_STATS_RESPONSE_SCHEMA)
 
     @staticmethod
     def parse_getplayerinfo_response_values(key_set: PlayerinfoKeySet, parsed: dict) -> dict:
-        if key_set == PlayerinfoKeySet.GENERAL_STATS:
+        if key_set is PlayerinfoKeySet.GENERAL_STATS:
             return parse_dict_values(parsed, GETPLAYERINFO_GENERAL_STATS_RESPONSE_SCHEMA)
         else:
             return parse_dict_values(parsed, GETPLAYERINFO_MAP_STATS_RESPONSE_SCHEMA)

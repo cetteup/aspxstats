@@ -171,7 +171,7 @@ class AspxClient:
                 datasets.append(Dataset(line[2:]))
             elif line[:2] == 'D\t':
                 # Line starts with data marker => add data line to current dataset
-                if current_line_type == LineType.DATA:
+                if current_line_type is LineType.DATA:
                     # Data row is followed by another data row
                     # => increase data line index to add another data line to current dataset
                     # (relevant for player search results for example)
@@ -182,7 +182,7 @@ class AspxClient:
             elif line[:2] == '$\t':
                 # Line starts with end marker => and stop parsing
                 break
-            elif current_line_type == LineType.HEADERS:
+            elif current_line_type is LineType.HEADERS:
                 # Line has no marker and last marker indicated a header line
                 # => append line to header of current dataset
                 datasets[-1].keys += line
