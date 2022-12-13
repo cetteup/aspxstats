@@ -22,11 +22,13 @@ class ValidationTest(TestCase):
                 data={
                     'str': 'some-string',
                     'numeric-str': '123456',
+                    'booly-str': '0',
                     'floaty-str': '7.89',
                     'ratio-str': '123:789',
                     'sub-dict': {
                         'sub-dict-str': 'some-string',
                         'sub-dict-numeric-str': '123456',
+                        'sub-dict-booly-str': '0',
                         'sub-dict-floaty-str': '7.89',
                         'sub-dict-ratio-str': '123:789',
                     },
@@ -34,11 +36,13 @@ class ValidationTest(TestCase):
                         {
                             'list-of-dicts-str': 'some-string',
                             'list-of-dicts-numeric-str': '123456',
+                            'list-of-dicts-booly-str': '0',
                             'list-of-dicts-floaty-str': '7.89',
                             'list-of-dicts-ratio-str': '123:789',
                             'list-of-dicts-sub-dict': {
                                 'list-of-dicts-sub-dict-str': 'some-string',
                                 'list-of-dicts-sub-dict-numeric-str': '123456',
+                                'list-of-dicts-sub-dict-booly-str': '0',
                                 'list-of-dicts-sub-dict-floaty-str': '7.89',
                                 'list-of-dicts-sub-dict-ratio-str': '123:789',
                             },
@@ -48,22 +52,26 @@ class ValidationTest(TestCase):
                 schema={
                     'str': AttributeSchema(type=str),
                     'numeric-str': AttributeSchema(type=str, is_numeric=True),
+                    'booly-str': AttributeSchema(type=str, is_booly=True),
                     'floaty-str': AttributeSchema(type=str, is_floaty=True),
                     'ratio-str': AttributeSchema(type=str, is_ratio=True),
                     'sub-dict': {
                         'sub-dict-str': AttributeSchema(type=str),
                         'sub-dict-numeric-str': AttributeSchema(type=str, is_numeric=True),
+                        'sub-dict-booly-str': AttributeSchema(type=str, is_booly=True),
                         'sub-dict-floaty-str': AttributeSchema(type=str, is_floaty=True),
                         'sub-dict-ratio-str': AttributeSchema(type=str, is_ratio=True),
                     },
                     'list-of-dicts': AttributeSchema(type=list, children={
                         'list-of-dicts-str': AttributeSchema(type=str),
                         'list-of-dicts-numeric-str': AttributeSchema(type=str, is_numeric=True),
+                        'list-of-dicts-booly-str': AttributeSchema(type=str, is_booly=True),
                         'list-of-dicts-floaty-str': AttributeSchema(type=str, is_floaty=True),
                         'list-of-dicts-ratio-str': AttributeSchema(type=str, is_ratio=True),
                         'list-of-dicts-sub-dict': {
                             'list-of-dicts-sub-dict-str': AttributeSchema(type=str),
                             'list-of-dicts-sub-dict-numeric-str': AttributeSchema(type=str, is_numeric=True),
+                            'list-of-dicts-sub-dict-booly-str': AttributeSchema(type=str, is_booly=True),
                             'list-of-dicts-sub-dict-floaty-str': AttributeSchema(type=str, is_floaty=True),
                             'list-of-dicts-sub-dict-ratio-str': AttributeSchema(type=str, is_ratio=True),
                         },
@@ -79,6 +87,46 @@ class ValidationTest(TestCase):
                 },
                 schema={
                     'str': AttributeSchema(type=str),
+                },
+                wantIsValid=True
+            ),
+            ValidationTestCase(
+                name='true for negative numeric-string',
+                data={
+                    'numeric-str': '-1'
+                },
+                schema={
+                    'numeric-str': AttributeSchema(type=str, is_numeric=True)
+                },
+                wantIsValid=True
+            ),
+            ValidationTestCase(
+                name='true for true-ish booly-string',
+                data={
+                    'booly-str': '1'
+                },
+                schema={
+                    'booly-str': AttributeSchema(type=str, is_booly=True)
+                },
+                wantIsValid=True
+            ),
+            ValidationTestCase(
+                name='true for false-ish booly-string',
+                data={
+                    'booly-str': '0'
+                },
+                schema={
+                    'booly-str': AttributeSchema(type=str, is_booly=True)
+                },
+                wantIsValid=True
+            ),
+            ValidationTestCase(
+                name='true for negative floaty-string',
+                data={
+                    'numeric-str': '-1.0'
+                },
+                schema={
+                    'numeric-str': AttributeSchema(type=str, is_floaty=True)
                 },
                 wantIsValid=True
             ),
@@ -109,6 +157,36 @@ class ValidationTest(TestCase):
                 },
                 schema={
                     'numeric-str': AttributeSchema(type=str, is_numeric=True),
+                },
+                wantIsValid=False
+            ),
+            ValidationTestCase(
+                name='false for non-numeric non-booly-string string attribute',
+                data={
+                    'booly-str': 'not-a-numeric-string',
+                },
+                schema={
+                    'booly-str': AttributeSchema(type=str, is_booly=True),
+                },
+                wantIsValid=False
+            ),
+            ValidationTestCase(
+                name='false for negative non-booly-string string attribute',
+                data={
+                    'booly-str': '-1',
+                },
+                schema={
+                    'booly-str': AttributeSchema(type=str, is_booly=True),
+                },
+                wantIsValid=False
+            ),
+            ValidationTestCase(
+                name='false for positive non-booly-string string attribute',
+                data={
+                    'booly-str': '2',
+                },
+                schema={
+                    'booly-str': AttributeSchema(type=str, is_booly=True),
                 },
                 wantIsValid=False
             ),

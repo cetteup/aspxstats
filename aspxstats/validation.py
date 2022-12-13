@@ -11,6 +11,8 @@ def is_valid_attribute(attribute: Union[str, dict, list], schema: Dict[str, Unio
     if isinstance(schema, AttributeSchema):
         if isinstance(attribute, str) and schema.type == str and schema.is_numeric:
             return is_numeric(attribute)
+        if isinstance(attribute, str) and schema.type == str and schema.is_booly:
+            return is_booly(attribute)
         if isinstance(attribute, str) and schema.type == str and schema.is_floaty:
             return is_floaty(attribute)
         if isinstance(attribute, str) and schema.type == str and schema.is_ratio:
@@ -33,6 +35,17 @@ def is_numeric(value: str) -> bool:
     try:
         int(value)
         return True
+    except ValueError:
+        return False
+
+
+def is_booly(value: str) -> bool:
+    """
+    Test whether a string is a parseable as a boolean-like integer (0 or 1)
+    """
+    try:
+        parsed = int(value)
+        return 0 <= parsed <= 1
     except ValueError:
         return False
 

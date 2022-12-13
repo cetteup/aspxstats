@@ -443,7 +443,7 @@ class AspxClientTest(TestCase):
             }
         }
         numeric_keys = [
-            'scor', 'jond', 'wins', 'loss', 'mode0', 'mode1', 'mode2', 'time', 'smoc', 'cmsc', 'kill',
+            'scor', 'jond', 'wins', 'loss', 'mode0', 'mode1', 'mode2', 'time', 'cmsc', 'kill',
             'kila', 'deth', 'suic', 'bksk', 'wdsk', 'tvcr', 'topr', 'twsc', 'cpcp', 'cacp', 'dfcp', 'heal',
             'rviv', 'rsup', 'rpar', 'tgte', 'dkas', 'dsab', 'cdsc', 'rank', 'kick', 'bbrs', 'tcdr', 'ban',
             'lbtl', 'vrk', 'tsql', 'tsqm', 'tlwf', 'mvks', 'vmks', 'mvrs', 'vmrs', 'fkit', 'fmap', 'fveh',
@@ -462,6 +462,7 @@ class AspxClientTest(TestCase):
             'kkl-1', 'kkl-2', 'kkl-3', 'kkl-4', 'kkl-5', 'kkl-6', 'kdt-0', 'kdt-1', 'kdt-2', 'kdt-3',
             'kdt-4', 'kdt-5', 'kdt-6', 'de-6', 'de-7', 'de-8'
         ]
+        booly_keys = ['smoc']
         floaty_keys = [
             'osaa', 'klpm', 'dtpm', 'ospm', 'klpr', 'dtpr', 'wac-0', 'wac-1', 'wac-2', 'wac-3', 'wac-4', 'wac-5',
             'wac-6', 'wac-7', 'wac-8', 'wac-9', 'wac-10', 'wac-11', 'wac-12', 'wac-13'
@@ -527,6 +528,15 @@ class AspxClientTest(TestCase):
                 valid = AspxClient.is_valid_getplayerinfo_response_data(PlayerinfoKeySet.GENERAL_STATS, parsed_copy)
                 # THEN
                 self.assertFalse(valid, f'"{key}" with non-numeric-string value failed')
+
+            if key in booly_keys:
+                # Attribute should be boolean-like numeric string => test with a non-booly-string
+                # GIVEN
+                parsed_copy['data'][key] = '2'
+                # WHEN
+                valid = AspxClient.is_valid_getplayerinfo_response_data(PlayerinfoKeySet.GENERAL_STATS, parsed_copy)
+                # THEN
+                self.assertFalse(valid, f'"{key}" with non-booly-string value failed')
 
             if key in floaty_keys:
                 # Attribute should be floaty => test with a non-floaty-string

@@ -27,6 +27,8 @@ def parse_dict_value(
     if isinstance(schema, AttributeSchema):
         if schema.is_numeric:
             return int(value)
+        if schema.is_booly:
+            return int(value) == 1
         if schema.is_floaty:
             return float(value)
         if schema.is_ratio:

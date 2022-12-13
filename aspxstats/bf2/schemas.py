@@ -35,7 +35,7 @@ GETPLAYERINFO_GENERAL_STATS_RESPONSE_SCHEMA: DictSchema = {
         'mode1': AttributeSchema(type=str, is_numeric=True),
         'mode2': AttributeSchema(type=str, is_numeric=True),
         'time': AttributeSchema(type=str, is_numeric=True),
-        'smoc': AttributeSchema(type=str, is_numeric=True),
+        'smoc': AttributeSchema(type=str, is_booly=True),
         'cmsc': AttributeSchema(type=str, is_numeric=True),
         'osaa': AttributeSchema(type=str, is_floaty=True),
         'kill': AttributeSchema(type=str, is_numeric=True),
