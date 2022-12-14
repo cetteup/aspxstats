@@ -3,7 +3,7 @@ from typing import Union, Optional
 from .client import AspxClient
 from .types import SearchMatchType, SearchSortOrder, PlayerSearchResponse, StatsProvider, LeaderboardType, \
     ScoreLeaderboardId, WeaponLeaderboardId, VehicleLeaderboardId, KitLeaderboardId, LeaderboardResponse, \
-    PlayerinfoKeySet
+    PlayerinfoKeySet, PlayerinfoResponse
 from ..types import ResponseValidationMode
 
 
@@ -69,6 +69,17 @@ def getleaderboard_dict(
 ) -> dict:
     with AspxClient(provider, timeout, response_validation_mode) as client:
         return client.getleaderboard_dict(leaderboard_type, leaderboard_id, pos, before, after, pid)
+
+
+def getplayerinfo(
+        pid: int,
+        key_set: PlayerinfoKeySet = PlayerinfoKeySet.GENERAL_STATS,
+        provider: StatsProvider = StatsProvider.BF2HUB,
+        timeout: float = 2.0,
+        response_validation_mode: ResponseValidationMode = ResponseValidationMode.LAX
+) -> PlayerinfoResponse:
+    with AspxClient(provider, timeout, response_validation_mode) as client:
+        return client.getplayerinfo(pid, key_set)
 
 
 def getplayerinfo_dict(

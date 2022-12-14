@@ -5,7 +5,11 @@ from .schemas import GETLEADERBOARD_RESPONSE_SCHEMA, SEARCHFORPLAYERS_RESPONSE_S
     GETAWARDSINFO_RESPONSE_SCHEMA, GETUNLOCKSINFO_RESPONSE_SCHEMA, GETBACKENDINFO_RESPONSE_SCHEMA
 from .types import StatsProvider, SearchMatchType, SearchSortOrder, PlayerSearchResult, \
     PlayerSearchResponse, LeaderboardType, ScoreLeaderboardId, WeaponLeaderboardId, VehicleLeaderboardId, \
-    KitLeaderboardId, LeaderboardEntry, LeaderboardResponse, PlayerinfoKeySet
+    KitLeaderboardId, LeaderboardEntry, LeaderboardResponse, PlayerinfoKeySet, PlayerinfoResponse, \
+    PlayerinfoGeneralStats, PlayerinfoTimestamps, PlayerinfoScores, PlayerinfoTimes, PlayerinfoRounds, PlayerinfoKills, \
+    PlayerinfoDeaths, PlayerinfoTeamwork, PlayerinfoTactical, PlayerinfoFavorites, PlayerinfoWeapon, PlayerinfoVehicle, \
+    PlayerinfoArmy, PlayerinfoKit, PlayerinfoRelations, PlayerinfoRelation, PlayerinfoMapStats, PlayerinfoMap
+from .utils import group_stats_by_item
 from ..client import AspxClient as BaseAspxClient
 from ..exceptions import InvalidParameterError, InvalidResponseError, NotFoundError
 from ..parsing import parse_dict_values
@@ -160,6 +164,157 @@ class AspxClient(BaseAspxClient):
     @staticmethod
     def parse_getleaderboard_response_values(parsed: dict) -> dict:
         return parse_dict_values(parsed, GETLEADERBOARD_RESPONSE_SCHEMA)
+
+    def getplayerinfo(
+            self,
+            pid: int,
+            key_set: PlayerinfoKeySet = PlayerinfoKeySet.GENERAL_STATS
+    ) -> PlayerinfoResponse:
+        parsed = self.getplayerinfo_dict(pid, key_set)
+
+        if key_set is PlayerinfoKeySet.GENERAL_STATS:
+            data = PlayerinfoGeneralStats(
+                pid=parsed['data']['pid'],
+                nick=parsed['data']['nick'],
+                rank=parsed['data']['rank'],
+                sgt_major_of_the_corps=parsed['data']['smoc'],
+                times_kicked=parsed['data']['kick'],
+                times_banned=parsed['data']['ban'],
+                accuracy=parsed['data']['osaa'],
+                timestamp=PlayerinfoTimestamps(
+                    joined=parsed['data']['jond'],
+                    last_battle=parsed['data']['lbtl']
+                ),
+                score=PlayerinfoScores(
+                    total=parsed['data']['scor'],
+                    teamwork=parsed['data']['twsc'],
+                    combat=parsed['data']['cmsc'],
+                    commander=parsed['data']['cdsc'],
+                    best_round=parsed['data']['bbrs'],
+                    per_minute=parsed['data']['ospm']
+                ),
+                time=PlayerinfoTimes(
+                    total=parsed['data']['time'],
+                    commander=parsed['data']['tcdr'],
+                    squad_leader=parsed['data']['tsql'],
+                    squad_member=parsed['data']['tsqm'],
+                    lone_wolf=parsed['data']['tlwf']
+                ),
+                rounds=PlayerinfoRounds(
+                    conquest=parsed['data']['mode0'],
+                    supply_lines=parsed['data']['mode1'],
+                    coop=parsed['data']['mode2'],
+                    wins=parsed['data']['wins'],
+                    losses=parsed['data']['loss']
+                ),
+                kills=PlayerinfoKills(
+                    total=parsed['data']['kill'],
+                    streak=parsed['data']['bksk'],
+                    per_minute=parsed['data']['klpm'],
+                    per_round=parsed['data']['klpr']
+                ),
+                deaths=PlayerinfoDeaths(
+                    total=parsed['data']['deth'],
+                    suicides=parsed['data']['suic'],
+                    streak=parsed['data']['wdsk'],
+                    per_minute=parsed['data']['dtpm'],
+                    per_round=parsed['data']['dtpr']
+                ),
+                teamwork=PlayerinfoTeamwork(
+                    flag_captures=parsed['data']['cpcp'],
+                    flag_assists=parsed['data']['cacp'],
+                    flag_defends=parsed['data']['dfcp'],
+                    kill_assists=parsed['data']['kila'],
+                    target_assists=parsed['data']['tgte'],
+                    heals=parsed['data']['heal'],
+                    revives=parsed['data']['rviv'],
+                    resupplies=parsed['data']['rsup'],
+                    repairs=parsed['data']['rpar'],
+                    driver_assists=parsed['data']['dkas'],
+                    driver_specials=parsed['data']['dsab']
+                ),
+                tactical=PlayerinfoTactical(
+                    teargas_flashbang_deploys=parsed['data']['de-6'],
+                    grappling_hook_deploys=parsed['data']['de-7'],
+                    zipline_deploys=parsed['data']['de-8']
+                ),
+                favorite=PlayerinfoFavorites(
+                    kit=parsed['data']['fkit'],
+                    weapon=parsed['data']['fwea'],
+                    vehicle=parsed['data']['fveh'],
+                    map=parsed['data']['fmap']
+                ),
+                weapons=[
+                    PlayerinfoWeapon(
+                        id=w['id'],
+                        time=w['tm'],
+                        kills=w['kl'],
+                        deaths=w['dt'],
+                        accuracy=w['ac'],
+                        kd=w['kd']
+                    ) for w in group_stats_by_item(parsed['data'], 'w', ['tm', 'kl', 'dt', 'ac', 'kd'])
+                ],
+                vehicles=[
+                    PlayerinfoVehicle(
+                        id=v['id'],
+                        time=v['tm'],
+                        kills=v['kl'],
+                        deaths=v['dt'],
+                        kd=v['kd'],
+                        road_kills=v['kr']
+                    ) for v in group_stats_by_item(parsed['data'], 'v', ['tm', 'kl', 'dt', 'kd', 'kr'])
+                ],
+                armies=[
+                    PlayerinfoArmy(
+                        id=a['id'],
+                        time=a['tm'],
+                        wins=a['wn'],
+                        losses=a['lo'],
+                        best_round_score=a['br']
+                    ) for a in group_stats_by_item(parsed['data'], 'a', ['tm', 'wn', 'lo', 'br'])
+                ],
+                kits=[
+                    PlayerinfoKit(
+                        id=k['id'],
+                        time=k['tm'],
+                        kills=k['kl'],
+                        deaths=k['dt'],
+                        kd=k['kd']
+                    ) for k in group_stats_by_item(parsed['data'], 'k', ['tm', 'kl', 'dt', 'kd'])
+                ],
+                relations=PlayerinfoRelations(
+                    top_rival=PlayerinfoRelation(
+                        pid=parsed['data']['topr'],
+                        nick=parsed['data']['vmns'],
+                        rank=parsed['data']['vmrs'],
+                        kills=parsed['data']['vmks']
+                    ),
+                    top_victim=PlayerinfoRelation(
+                        pid=parsed['data']['tvcr'],
+                        nick=parsed['data']['mvns'],
+                        rank=parsed['data']['mvrs'],
+                        kills=parsed['data']['mvks']
+                    )
+                )
+            )
+        else:
+            data = PlayerinfoMapStats(
+                pid=parsed['data']['pid'],
+                nick=parsed['data']['nick'],
+                maps=[
+                    PlayerinfoMap(
+                        id=m['id'],
+                        time=m['tm'],
+                        wins=m['wn'],
+                        losses=m['ls']
+                    ) for m in group_stats_by_item(parsed['data'], 'm', ['tm', 'wn', 'ls'])
+                ]
+            )
+
+        return PlayerinfoResponse(
+            asof=parsed['asof'],
+            data=data
+        )
 
     def getplayerinfo_dict(
             self,
