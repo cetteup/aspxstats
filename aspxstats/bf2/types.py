@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import List, Union
 
+from .utils import group_stats_by_item
+
 
 class StatsProvider(str, Enum):
     BF2HUB = 'bf2hub'
@@ -42,6 +44,20 @@ class PlayerSearchResponse:
     def __iter__(self):
         yield 'asof', self.asof
         yield 'results', [dict(result) for result in self.results]
+
+    @staticmethod
+    def from_aspx_response(parsed: dict) -> 'PlayerSearchResponse':
+        return PlayerSearchResponse(
+            asof=parsed['asof'],
+            results=[
+                PlayerSearchResult(
+                    n=result['n'],
+                    nick=result['nick'],
+                    pid=result['pid'],
+                    score=result['score']
+                ) for result in parsed['results']
+            ]
+        )
 
 
 class LeaderboardType(str, Enum):
@@ -121,6 +137,22 @@ class LeaderboardResponse:
         yield 'size', self.size
         yield 'asof', self.asof
         yield 'entries', [dict(entry) for entry in self.entries]
+
+    @staticmethod
+    def from_aspx_response(parsed: dict) -> 'LeaderboardResponse':
+        return LeaderboardResponse(
+            size=parsed['size'],
+            asof=parsed['asof'],
+            entries=[
+                LeaderboardEntry(
+                    n=entry['n'],
+                    pid=entry['pid'],
+                    nick=entry['nick'],
+                    rank=entry['playerrank'],
+                    country_code=entry['countrycode']
+                ) for entry in parsed['entries']
+            ]
+        )
 
 
 class PlayerinfoKeySet(str, Enum):
@@ -414,6 +446,133 @@ class PlayerinfoGeneralStats:
         yield 'kits', [dict(k) for k in self.kits]
         yield 'relations', dict(self.relations)
 
+    @staticmethod
+    def from_aspx_response(parsed: dict) -> 'PlayerinfoGeneralStats':
+        return PlayerinfoGeneralStats(
+            pid=parsed['data']['pid'],
+            nick=parsed['data']['nick'],
+            rank=parsed['data']['rank'],
+            sgt_major_of_the_corps=parsed['data']['smoc'],
+            times_kicked=parsed['data']['kick'],
+            times_banned=parsed['data']['ban'],
+            accuracy=parsed['data']['osaa'],
+            timestamp=PlayerinfoTimestamps(
+                joined=parsed['data']['jond'],
+                last_battle=parsed['data']['lbtl']
+            ),
+            score=PlayerinfoScores(
+                total=parsed['data']['scor'],
+                teamwork=parsed['data']['twsc'],
+                combat=parsed['data']['cmsc'],
+                commander=parsed['data']['cdsc'],
+                best_round=parsed['data']['bbrs'],
+                per_minute=parsed['data']['ospm']
+            ),
+            time=PlayerinfoTimes(
+                total=parsed['data']['time'],
+                commander=parsed['data']['tcdr'],
+                squad_leader=parsed['data']['tsql'],
+                squad_member=parsed['data']['tsqm'],
+                lone_wolf=parsed['data']['tlwf']
+            ),
+            rounds=PlayerinfoRounds(
+                conquest=parsed['data']['mode0'],
+                supply_lines=parsed['data']['mode1'],
+                coop=parsed['data']['mode2'],
+                wins=parsed['data']['wins'],
+                losses=parsed['data']['loss']
+            ),
+            kills=PlayerinfoKills(
+                total=parsed['data']['kill'],
+                streak=parsed['data']['bksk'],
+                per_minute=parsed['data']['klpm'],
+                per_round=parsed['data']['klpr']
+            ),
+            deaths=PlayerinfoDeaths(
+                total=parsed['data']['deth'],
+                suicides=parsed['data']['suic'],
+                streak=parsed['data']['wdsk'],
+                per_minute=parsed['data']['dtpm'],
+                per_round=parsed['data']['dtpr']
+            ),
+            teamwork=PlayerinfoTeamwork(
+                flag_captures=parsed['data']['cpcp'],
+                flag_assists=parsed['data']['cacp'],
+                flag_defends=parsed['data']['dfcp'],
+                kill_assists=parsed['data']['kila'],
+                target_assists=parsed['data']['tgte'],
+                heals=parsed['data']['heal'],
+                revives=parsed['data']['rviv'],
+                resupplies=parsed['data']['rsup'],
+                repairs=parsed['data']['rpar'],
+                driver_assists=parsed['data']['dkas'],
+                driver_specials=parsed['data']['dsab']
+            ),
+            tactical=PlayerinfoTactical(
+                teargas_flashbang_deploys=parsed['data']['de-6'],
+                grappling_hook_deploys=parsed['data']['de-7'],
+                zipline_deploys=parsed['data']['de-8']
+            ),
+            favorite=PlayerinfoFavorites(
+                kit=parsed['data']['fkit'],
+                weapon=parsed['data']['fwea'],
+                vehicle=parsed['data']['fveh'],
+                map=parsed['data']['fmap']
+            ),
+            weapons=[
+                PlayerinfoWeapon(
+                    id=w['id'],
+                    time=w['tm'],
+                    kills=w['kl'],
+                    deaths=w['dt'],
+                    accuracy=w['ac'],
+                    kd=w['kd']
+                ) for w in group_stats_by_item(parsed['data'], 'w', ['tm', 'kl', 'dt', 'ac', 'kd'])
+            ],
+            vehicles=[
+                PlayerinfoVehicle(
+                    id=v['id'],
+                    time=v['tm'],
+                    kills=v['kl'],
+                    deaths=v['dt'],
+                    kd=v['kd'],
+                    road_kills=v['kr']
+                ) for v in group_stats_by_item(parsed['data'], 'v', ['tm', 'kl', 'dt', 'kd', 'kr'])
+            ],
+            armies=[
+                PlayerinfoArmy(
+                    id=a['id'],
+                    time=a['tm'],
+                    wins=a['wn'],
+                    losses=a['lo'],
+                    best_round_score=a['br']
+                ) for a in group_stats_by_item(parsed['data'], 'a', ['tm', 'wn', 'lo', 'br'])
+            ],
+            kits=[
+                PlayerinfoKit(
+                    id=k['id'],
+                    time=k['tm'],
+                    kills=k['kl'],
+                    deaths=k['dt'],
+                    kd=k['kd']
+                ) for k in group_stats_by_item(parsed['data'], 'k', ['tm', 'kl', 'dt', 'kd'])
+            ],
+            relations=PlayerinfoRelations(
+                top_rival=PlayerinfoRelation(
+                    pid=parsed['data']['topr'],
+                    nick=parsed['data']['vmns'],
+                    rank=parsed['data']['vmrs'],
+                    kills=parsed['data']['vmks']
+                ),
+                top_victim=PlayerinfoRelation(
+                    pid=parsed['data']['tvcr'],
+                    nick=parsed['data']['mvns'],
+                    rank=parsed['data']['mvrs'],
+                    kills=parsed['data']['mvks']
+                )
+            )
+        )
+
 
 @dataclass
 class PlayerinfoMap:
@@ -439,6 +598,21 @@ class PlayerinfoMapStats:
         yield 'pid', self.pid
         yield 'nick', self.nick
         yield 'maps', [dict(m) for m in self.maps]
+
+    @staticmethod
+    def from_aspx_response(parsed: dict) -> 'PlayerinfoMapStats':
+        return PlayerinfoMapStats(
+                pid=parsed['data']['pid'],
+                nick=parsed['data']['nick'],
+                maps=[
+                    PlayerinfoMap(
+                        id=m['id'],
+                        time=m['tm'],
+                        wins=m['wn'],
+                        losses=m['ls']
+                    ) for m in group_stats_by_item(parsed['data'], 'm', ['tm', 'wn', 'ls'])
+                ]
+            )
 
 
 @dataclass
