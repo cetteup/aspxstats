@@ -47,7 +47,9 @@ class AspxClient(BaseAspxClient):
             'where': where,
             'sort': sort
         })
+        return self.validate_and_parse_searchforplayers_response(raw_data)
 
+    def validate_and_parse_searchforplayers_response(self, raw_data: str) -> dict:
         valid_response, _ = self.is_valid_aspx_response(raw_data, self.response_validation_mode)
         if not valid_response:
             raise InvalidResponseError(f'{self.provider} returned an invalid searchforplayers response')
@@ -111,7 +113,9 @@ class AspxClient(BaseAspxClient):
             'after': str(after),
             'pid': str(pid) if pid is not None else None
         })
+        return self.validate_and_parse_searchforplayers_response(raw_data)
 
+    def validate_and_parse_getleaderboard_response(self, raw_data: str) -> dict:
         valid_response, _ = self.is_valid_aspx_response(raw_data, self.response_validation_mode)
         if not valid_response:
             raise InvalidResponseError(f'{self.provider} returned an invalid getleaderboard response')
@@ -162,7 +166,9 @@ class AspxClient(BaseAspxClient):
             'pid': str(pid),
             'info': key_set
         })
+        return self.validate_and_parse_getplayerinfo_response(key_set, raw_data)
 
+    def validate_and_parse_getplayerinfo_response(self, key_set: PlayerinfoKeySet, raw_data: str) -> dict:
         valid_response, not_found = self.is_valid_aspx_response(raw_data, self.response_validation_mode)
         if not valid_response and not_found:
             raise NotFoundError(f'No such player on {self.provider}')
@@ -234,7 +240,9 @@ class AspxClient(BaseAspxClient):
         raw_data = self.get_aspx_data('getrankinfo.aspx', {
             'pid': str(pid)
         })
+        return self.validate_and_parse_getrankinfo_response(raw_data)
 
+    def validate_and_parse_getrankinfo_response(self, raw_data: str) -> dict:
         valid_response, not_found = self.is_valid_aspx_response(raw_data, self.response_validation_mode)
         if not valid_response and not_found:
             raise NotFoundError(f'No such player on {self.provider}')
@@ -266,7 +274,9 @@ class AspxClient(BaseAspxClient):
         raw_data = self.get_aspx_data('getawardsinfo.aspx', {
             'pid': str(pid)
         })
+        return self.validate_and_parse_getawardsinfo_response(raw_data)
 
+    def validate_and_parse_getawardsinfo_response(self, raw_data: str) -> dict:
         valid_response, not_found = self.is_valid_aspx_response(raw_data, self.response_validation_mode)
         if not valid_response and not_found:
             raise NotFoundError(f'No such player on {self.provider}')
@@ -299,7 +309,9 @@ class AspxClient(BaseAspxClient):
         raw_data = self.get_aspx_data('getunlocksinfo.aspx', {
             'pid': str(pid)
         })
+        return self.validate_and_parse_getunlocksinfo_response(raw_data)
 
+    def validate_and_parse_getunlocksinfo_response(self, raw_data: str) -> dict:
         valid_response, not_found = self.is_valid_aspx_response(raw_data, self.response_validation_mode)
         if not valid_response and not_found:
             raise NotFoundError(f'No such player on {self.provider}')
@@ -330,7 +342,9 @@ class AspxClient(BaseAspxClient):
             self,
     ) -> dict:
         raw_data = self.get_aspx_data('getbackendinfo.aspx')
+        return self.validate_and_parse_getbackendinfo_response(raw_data)
 
+    def validate_and_parse_getbackendinfo_response(self, raw_data: str) -> dict:
         valid_response, _ = self.is_valid_aspx_response(raw_data, self.response_validation_mode)
         if not valid_response:
             raise InvalidResponseError(f'{self.provider} returned an invalid getbackendinfo response')
