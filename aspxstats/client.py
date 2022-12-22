@@ -63,13 +63,14 @@ class AspxClient:
     @staticmethod
     def stringify_params(
             params: Optional[Dict[str, Optional[Union[str, Enum]]]]
-    ) -> Optional[Dict[str, Optional[str]]]:
+    ) -> Optional[Dict[str, str]]:
         if params is None:
             return params
 
         return {
             key: str(value.value) if isinstance(value, Enum) else value
             for (key, value) in params.items()
+            if value is not None
         }
 
     @staticmethod
