@@ -1,4 +1,5 @@
-from typing import Dict, Optional
+from enum import Enum
+from typing import Dict, Optional, Union
 from urllib.parse import urljoin
 
 import aiohttp as aiohttp
@@ -31,7 +32,7 @@ class AsyncAspxClient(AspxClient):
     async def close(self) -> None:
         await self.session.close()
 
-    async def get_aspx_data(self, endpoint: str, params: Optional[Dict[str, Optional[str]]] = None) -> str:
+    async def get_aspx_data(self, endpoint: str, params: Optional[Dict[str, Optional[Union[str, Enum]]]] = None) -> str:
         """
         Fetch raw, unparsed data from a .aspx endpoint
         :param endpoint: (relative) URL of the endpoint
@@ -40,7 +41,7 @@ class AsyncAspxClient(AspxClient):
         """
         url = urljoin(self.base_uri, endpoint)
         try:
-            response = await self.session.get(url, params=params, timeout=self.timeout)
+            response = await self.session.get(url, params=self.stringify_params(params), timeout=self.timeout)
 
             if response.ok:
                 return await response.text()

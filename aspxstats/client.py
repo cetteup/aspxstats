@@ -1,5 +1,6 @@
 import re
-from typing import Dict, Optional, Tuple, List
+from enum import Enum
+from typing import Dict, Optional, Tuple, List, Union
 from urllib.parse import urljoin
 
 import requests as requests
@@ -41,7 +42,7 @@ class AspxClient:
     def close(self) -> None:
         self.session.close()
 
-    def get_aspx_data(self, endpoint: str, params: Optional[Dict[str, Optional[str]]] = None) -> str:
+    def get_aspx_data(self, endpoint: str, params: Optional[Dict[str, Optional[Union[str, Enum]]]] = None) -> str:
         """
         Fetch raw, unparsed data from a .aspx endpoint
         :param endpoint: (relative) URL of the endpoint
@@ -50,7 +51,7 @@ class AspxClient:
         """
         url = urljoin(self.base_uri, endpoint)
         try:
-            response = self.session.get(url, params=params, timeout=self.timeout)
+            response = self.session.get(url, params=self.stringify_params(params), timeout=self.timeout)
 
             if response.ok:
                 return response.text
@@ -58,6 +59,18 @@ class AspxClient:
                 raise ClientError(f'Failed to fetch ASPX data (HTTP/{response.status_code})')
         except requests.RequestException as e:
             raise ClientError(f'Failed to fetch ASPX data: {e}')
+
+    @staticmethod
+    def stringify_params(
+            params: Optional[Dict[str, Optional[Union[str, Enum]]]]
+    ) -> Optional[Dict[str, Optional[str]]]:
+        if params is None:
+            return params
+
+        return {
+            key: str(value.value) if isinstance(value, Enum) else value
+            for (key, value) in params.items()
+        }
 
     @staticmethod
     def is_valid_aspx_response(
