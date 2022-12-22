@@ -113,7 +113,7 @@ class AspxClient(BaseAspxClient):
             'after': str(after),
             'pid': str(pid) if pid is not None else None
         })
-        return self.validate_and_parse_searchforplayers_response(raw_data)
+        return self.validate_and_parse_getleaderboard_response(raw_data)
 
     def validate_and_parse_getleaderboard_response(self, raw_data: str) -> dict:
         valid_response, _ = self.is_valid_aspx_response(raw_data, self.response_validation_mode)

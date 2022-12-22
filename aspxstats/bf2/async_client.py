@@ -82,7 +82,7 @@ class AsyncAspxClient(AspxClient, AsyncBaseAspxClient):
             'after': str(after),
             'pid': str(pid) if pid is not None else None
         })
-        return self.validate_and_parse_searchforplayers_response(raw_data)
+        return self.validate_and_parse_getleaderboard_response(raw_data)
 
     async def getplayerinfo(
             self,
