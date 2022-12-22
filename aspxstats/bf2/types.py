@@ -180,7 +180,7 @@ class PlayerinfoScores:
     combat: int
     commander: int
     best_round: int
-    per_minute: int
+    per_minute: float
 
     def __iter__(self):
         yield 'total', self.total
