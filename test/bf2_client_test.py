@@ -1,6 +1,6 @@
+import unittest
 from dataclasses import dataclass
 from typing import List
-from unittest import TestCase
 
 from aspxstats import InvalidParameterError
 from aspxstats.bf2 import AspxClient, StatsProvider
@@ -8,7 +8,7 @@ from aspxstats.bf2.types import PlayerinfoKeySet
 from aspxstats.types import ProviderConfig
 
 
-class AspxClientTest(TestCase):
+class AspxClientTest(unittest.TestCase):
     def test_is_valid_searchforplayers_response_data(self):
         @dataclass
         class SearchforplayersTestCase:
@@ -299,7 +299,7 @@ class AspxClientTest(TestCase):
                 wantIsValid=False
             ),
             GetleaderboardTestCase(
-                name='false for non-dict in  entries',
+                name='false for non-dict in entries',
                 parsed={
                     'size': '100000',
                     'asof': '1663447766',
@@ -757,6 +757,83 @@ class AspxClientTest(TestCase):
             # THEN
             self.assertDictEqual(t.expected, actual)
 
+    def test_is_valid_getrankinfo_response_data(self):
+        @dataclass
+        class GetrankinfoTestCase:
+            name: str
+            parsed: dict
+            wantIsValid: bool
+
+        # GIVEN
+        tests: List[GetrankinfoTestCase] = [
+            GetrankinfoTestCase(
+                name='true for valid getrankinfo data',
+                parsed={
+                    'data': {
+                        'rank': '5',
+                        'chng': '0',
+                        'decr': '0'
+                    }
+                },
+                wantIsValid=True
+            ),
+            GetrankinfoTestCase(
+                name='false for missing data',
+                parsed={
+                    'some_key': {
+                        'some_value': '5',
+                    }
+                },
+                wantIsValid=False
+            ),
+            GetrankinfoTestCase(
+                name='false for non-dict data',
+                parsed={
+                    'data': 'some-value'
+                },
+                wantIsValid=False
+            ),
+            GetrankinfoTestCase(
+                name='false for data containing non-numeric-string numeric-string attribute',
+                parsed={
+                    'data': {
+                        'rank': 'abcdef',
+                        'chng': '0',
+                        'decr': '0'
+                    }
+                },
+                wantIsValid=False
+            ),
+            GetrankinfoTestCase(
+                name='false for data containing non-booly-string booly-string attribute',
+                parsed={
+                    'data': {
+                        'rank': '5',
+                        'chng': '2',
+                        'decr': '0'
+                    }
+                },
+                wantIsValid=False
+            ),
+            GetrankinfoTestCase(
+                name='false for missing data attribute',
+                parsed={
+                    'data': {
+                        'chng': '0',
+                        'decr': '0'
+                    }
+                },
+                wantIsValid=False
+            )
+        ]
+
+        for t in tests:
+            # WHEN
+            valid = AspxClient.is_valid_getrankinfo_response_data(t.parsed)
+
+            # THEN
+            self.assertEqual(t.wantIsValid, valid, f'"{t.name}" failed\nexpected: {t.wantIsValid}\nactual: {valid}')
+
     def test_get_provider_config(self):
         # GIVEN
         provider = StatsProvider.BF2HUB
@@ -786,3 +863,7 @@ class AspxClientTest(TestCase):
             AspxClient.get_provider_config,
             provider
         )
+
+
+if __name__ == '__main__':
+    unittest.main()

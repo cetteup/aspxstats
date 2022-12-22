@@ -362,8 +362,8 @@ GETPLAYERINFO_MAP_STATS_RESPONSE_SCHEMA: DictSchema = {
 GETRANKINFO_RESPONSE_SCHEMA: DictSchema = {
     'data': {
         'rank': AttributeSchema(type=str, is_numeric=True),
-        'chng': AttributeSchema(type=str, is_numeric=True),
-        'decr': AttributeSchema(type=str, is_numeric=True)
+        'chng': AttributeSchema(type=str, is_booly=True),
+        'decr': AttributeSchema(type=str, is_booly=True)
     }
 }
 

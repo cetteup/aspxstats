@@ -6,7 +6,7 @@ from .schemas import GETLEADERBOARD_RESPONSE_SCHEMA, SEARCHFORPLAYERS_RESPONSE_S
 from .types import StatsProvider, SearchMatchType, SearchSortOrder, PlayerSearchResponse, LeaderboardType, \
     ScoreLeaderboardId, WeaponLeaderboardId, VehicleLeaderboardId, \
     KitLeaderboardId, LeaderboardResponse, PlayerinfoKeySet, PlayerinfoResponse, \
-    PlayerinfoGeneralStats, PlayerinfoMapStats
+    PlayerinfoGeneralStats, PlayerinfoMapStats, RankinfoResponse
 from ..client import AspxClient as BaseAspxClient
 from ..exceptions import InvalidParameterError, InvalidResponseError, NotFoundError
 from ..parsing import parse_dict_values
@@ -219,6 +219,13 @@ class AspxClient(BaseAspxClient):
             return parse_dict_values(parsed, GETPLAYERINFO_GENERAL_STATS_RESPONSE_SCHEMA)
         else:
             return parse_dict_values(parsed, GETPLAYERINFO_MAP_STATS_RESPONSE_SCHEMA)
+
+    def getrankinfo(
+            self,
+            pid: int
+    ) -> RankinfoResponse:
+        parsed = self.getrankinfo_dict(pid)
+        return RankinfoResponse.from_aspx_response(parsed)
 
     def getrankinfo_dict(
             self,

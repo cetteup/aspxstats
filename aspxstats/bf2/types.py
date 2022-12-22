@@ -623,3 +623,33 @@ class PlayerinfoResponse:
     def __iter__(self):
         yield 'asof', self.asof
         yield 'data', dict(self.data)
+
+
+@dataclass
+class RankinfoData:
+    rank: int
+    promoted: bool
+    demoted: bool
+
+    def __iter__(self):
+        yield 'rank', self.rank
+        yield 'promoted', self.promoted
+        yield 'demoted', self.demoted
+
+
+@dataclass
+class RankinfoResponse:
+    data: RankinfoData
+
+    def __iter__(self):
+        yield 'data', dict(self.data)
+
+    @staticmethod
+    def from_aspx_response(parsed: dict) -> 'RankinfoResponse':
+        return RankinfoResponse(
+            data=RankinfoData(
+                rank=parsed['data']['rank'],
+                promoted=parsed['data']['chng'],
+                demoted=parsed['data']['decr']
+            )
+        )
