@@ -98,7 +98,7 @@ class VehicleLeaderboardId(int, Enum):
     ANTI_AIR = 2
     HELICOPTER = 3
     TRANSPORT = 4
-    GROUND_DEFENSE = 5
+    GROUND_DEFENSE = 6
 
 
 class KitLeaderboardId(int, Enum):
