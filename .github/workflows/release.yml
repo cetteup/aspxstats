@@ -10,7 +10,7 @@ permissions:
 jobs:
   build-and-publish:
     name: build-and-publish
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python 3.8
