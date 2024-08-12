@@ -2,8 +2,8 @@ from typing import Optional, Union
 
 from .client import AspxClient
 from .types import StatsProvider, SearchMatchType, SearchSortOrder, PlayerSearchResponse, LeaderboardType, \
-    ScoreLeaderboardId, WeaponLeaderboardId, VehicleLeaderboardId, \
-    KitLeaderboardId, LeaderboardResponse, PlayerinfoKeySet, PlayerinfoResponse, \
+    ScoreLeaderboardId, WeaponType, VehicleType, \
+    KitType, LeaderboardResponse, PlayerinfoKeySet, PlayerinfoResponse, \
     PlayerinfoGeneralStats, PlayerinfoMapStats, RankinfoResponse
 from ..async_client import AsyncAspxClient as AsyncBaseAspxClient
 from ..types import ResponseValidationMode
@@ -47,9 +47,9 @@ class AsyncAspxClient(AspxClient, AsyncBaseAspxClient):
             leaderboard_type: LeaderboardType = LeaderboardType.SCORE,
             leaderboard_id: Union[
                 ScoreLeaderboardId,
-                WeaponLeaderboardId,
-                VehicleLeaderboardId,
-                KitLeaderboardId
+                WeaponType,
+                VehicleType,
+                KitType
             ] = ScoreLeaderboardId.OVERALL,
             pos: int = 1,
             before: int = 0,
@@ -64,9 +64,9 @@ class AsyncAspxClient(AspxClient, AsyncBaseAspxClient):
             leaderboard_type: LeaderboardType = LeaderboardType.SCORE,
             leaderboard_id: Union[
                 ScoreLeaderboardId,
-                WeaponLeaderboardId,
-                VehicleLeaderboardId,
-                KitLeaderboardId
+                WeaponType,
+                VehicleType,
+                KitType
             ] = ScoreLeaderboardId.OVERALL,
             pos: int = 1,
             before: int = 0,

@@ -76,7 +76,7 @@ class ScoreLeaderboardId(str, Enum):
     COMBAT = 'combat'
 
 
-class WeaponLeaderboardId(int, Enum):
+class WeaponType(int, Enum):
     ASSAULT_RIFLE = 0
     GRENADE_LAUNCHER = 1
     CARBINE = 2
@@ -92,7 +92,7 @@ class WeaponLeaderboardId(int, Enum):
     GRENADE = 12
 
 
-class VehicleLeaderboardId(int, Enum):
+class VehicleType(int, Enum):
     ARMOR = 0
     JET = 1
     ANTI_AIR = 2
@@ -101,7 +101,7 @@ class VehicleLeaderboardId(int, Enum):
     GROUND_DEFENSE = 6
 
 
-class KitLeaderboardId(int, Enum):
+class KitType(int, Enum):
     ANTI_TANK = 0
     ASSAULT = 1
     ENGINEER = 2

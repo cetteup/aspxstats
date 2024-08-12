@@ -2,7 +2,7 @@ from typing import Union, Optional
 
 from .client import AspxClient
 from .types import SearchMatchType, SearchSortOrder, PlayerSearchResponse, StatsProvider, LeaderboardType, \
-    ScoreLeaderboardId, WeaponLeaderboardId, VehicleLeaderboardId, KitLeaderboardId, LeaderboardResponse, \
+    ScoreLeaderboardId, WeaponType, VehicleType, KitType, LeaderboardResponse, \
     PlayerinfoKeySet, PlayerinfoResponse, RankinfoResponse
 from ..types import ResponseValidationMode
 
@@ -35,9 +35,9 @@ def getleaderboard(
         leaderboard_type: LeaderboardType = LeaderboardType.SCORE,
         leaderboard_id: Union[
             ScoreLeaderboardId,
-            WeaponLeaderboardId,
-            VehicleLeaderboardId,
-            KitLeaderboardId
+            WeaponType,
+            VehicleType,
+            KitType
         ] = ScoreLeaderboardId.OVERALL,
         pos: int = 1,
         before: int = 0,
@@ -55,9 +55,9 @@ def getleaderboard_dict(
         leaderboard_type: LeaderboardType = LeaderboardType.SCORE,
         leaderboard_id: Union[
             ScoreLeaderboardId,
-            WeaponLeaderboardId,
-            VehicleLeaderboardId,
-            KitLeaderboardId
+            WeaponType,
+            VehicleType,
+            KitType
         ] = ScoreLeaderboardId.OVERALL,
         pos: int = 1,
         before: int = 0,

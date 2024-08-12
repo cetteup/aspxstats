@@ -4,8 +4,8 @@ from .schemas import GETLEADERBOARD_RESPONSE_SCHEMA, SEARCHFORPLAYERS_RESPONSE_S
     GETPLAYERINFO_GENERAL_STATS_RESPONSE_SCHEMA, GETPLAYERINFO_MAP_STATS_RESPONSE_SCHEMA, GETRANKINFO_RESPONSE_SCHEMA, \
     GETAWARDSINFO_RESPONSE_SCHEMA, GETUNLOCKSINFO_RESPONSE_SCHEMA, GETBACKENDINFO_RESPONSE_SCHEMA
 from .types import StatsProvider, SearchMatchType, SearchSortOrder, PlayerSearchResponse, LeaderboardType, \
-    ScoreLeaderboardId, WeaponLeaderboardId, VehicleLeaderboardId, \
-    KitLeaderboardId, LeaderboardResponse, PlayerinfoKeySet, PlayerinfoResponse, \
+    ScoreLeaderboardId, WeaponType, VehicleType, \
+    KitType, LeaderboardResponse, PlayerinfoKeySet, PlayerinfoResponse, \
     PlayerinfoGeneralStats, PlayerinfoMapStats, RankinfoResponse
 from ..client import AspxClient as BaseAspxClient
 from ..exceptions import InvalidParameterError, InvalidResponseError, NotFoundError
@@ -78,9 +78,9 @@ class AspxClient(BaseAspxClient):
             leaderboard_type: LeaderboardType = LeaderboardType.SCORE,
             leaderboard_id: Union[
                 ScoreLeaderboardId,
-                WeaponLeaderboardId,
-                VehicleLeaderboardId,
-                KitLeaderboardId
+                WeaponType,
+                VehicleType,
+                KitType
             ] = ScoreLeaderboardId.OVERALL,
             pos: int = 1,
             before: int = 0,
@@ -95,9 +95,9 @@ class AspxClient(BaseAspxClient):
             leaderboard_type: LeaderboardType = LeaderboardType.SCORE,
             leaderboard_id: Union[
                 ScoreLeaderboardId,
-                WeaponLeaderboardId,
-                VehicleLeaderboardId,
-                KitLeaderboardId
+                WeaponType,
+                VehicleType,
+                KitType
             ] = ScoreLeaderboardId.OVERALL,
             pos: int = 1,
             before: int = 0,
