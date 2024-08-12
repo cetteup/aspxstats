@@ -98,6 +98,10 @@ class VehicleType(int, Enum):
     ANTI_AIR = 2
     HELICOPTER = 3
     TRANSPORT = 4
+    ARTILLERY = 5
+    """
+    Not used by the game client and non-functional for leaderboards (BF2Hub returns an error)
+    """
     GROUND_DEFENSE = 6
 
 
