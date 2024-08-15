@@ -13,9 +13,10 @@ async def async_searchforplayers(
         sort: SearchSortOrder = SearchSortOrder.ASCENDING,
         provider: StatsProvider = StatsProvider.BF2HUB,
         timeout: float = 2.0,
-        response_validation_mode: ResponseValidationMode = ResponseValidationMode.LAX
+        response_validation_mode: ResponseValidationMode = ResponseValidationMode.LAX,
+        clean_nicks: bool = False
 ) -> PlayerSearchResponse:
-    async with AsyncAspxClient(provider, timeout, response_validation_mode) as client:
+    async with AsyncAspxClient(provider, timeout, response_validation_mode, clean_nicks) as client:
         return await client.searchforplayers(nick, where, sort)
 
 
@@ -25,9 +26,10 @@ async def async_searchforplayers_dict(
         sort: SearchSortOrder = SearchSortOrder.ASCENDING,
         provider: StatsProvider = StatsProvider.BF2HUB,
         timeout: float = 2.0,
-        response_validation_mode: ResponseValidationMode = ResponseValidationMode.LAX
+        response_validation_mode: ResponseValidationMode = ResponseValidationMode.LAX,
+        clean_nicks: bool = False
 ) -> dict:
-    async with AsyncAspxClient(provider, timeout, response_validation_mode) as client:
+    async with AsyncAspxClient(provider, timeout, response_validation_mode, clean_nicks) as client:
         return await client.searchforplayers_dict(nick, where, sort)
 
 
@@ -45,9 +47,10 @@ async def async_getleaderboard(
         pid: Optional[int] = None,
         provider: StatsProvider = StatsProvider.BF2HUB,
         timeout: float = 2.0,
-        response_validation_mode: ResponseValidationMode = ResponseValidationMode.LAX
+        response_validation_mode: ResponseValidationMode = ResponseValidationMode.LAX,
+        clean_nicks: bool = False
 ) -> LeaderboardResponse:
-    async with AsyncAspxClient(provider, timeout, response_validation_mode) as client:
+    async with AsyncAspxClient(provider, timeout, response_validation_mode, clean_nicks) as client:
         return await client.getleaderboard(leaderboard_type, leaderboard_id, pos, before, after, pid)
 
 
@@ -65,9 +68,10 @@ async def async_getleaderboard_dict(
         pid: Optional[int] = None,
         provider: StatsProvider = StatsProvider.BF2HUB,
         timeout: float = 2.0,
-        response_validation_mode: ResponseValidationMode = ResponseValidationMode.LAX
+        response_validation_mode: ResponseValidationMode = ResponseValidationMode.LAX,
+        clean_nicks: bool = False
 ) -> dict:
-    async with AsyncAspxClient(provider, timeout, response_validation_mode) as client:
+    async with AsyncAspxClient(provider, timeout, response_validation_mode, clean_nicks) as client:
         return await client.getleaderboard_dict(leaderboard_type, leaderboard_id, pos, before, after, pid)
 
 
@@ -76,9 +80,10 @@ async def async_getplayerinfo(
         key_set: PlayerinfoKeySet = PlayerinfoKeySet.GENERAL_STATS,
         provider: StatsProvider = StatsProvider.BF2HUB,
         timeout: float = 2.0,
-        response_validation_mode: ResponseValidationMode = ResponseValidationMode.LAX
+        response_validation_mode: ResponseValidationMode = ResponseValidationMode.LAX,
+        clean_nicks: bool = False
 ) -> PlayerinfoResponse:
-    async with AsyncAspxClient(provider, timeout, response_validation_mode) as client:
+    async with AsyncAspxClient(provider, timeout, response_validation_mode, clean_nicks) as client:
         return await client.getplayerinfo(pid, key_set)
 
 
@@ -87,9 +92,10 @@ async def async_getplayerinfo_dict(
         key_set: PlayerinfoKeySet = PlayerinfoKeySet.GENERAL_STATS,
         provider: StatsProvider = StatsProvider.BF2HUB,
         timeout: float = 2.0,
-        response_validation_mode: ResponseValidationMode = ResponseValidationMode.LAX
+        response_validation_mode: ResponseValidationMode = ResponseValidationMode.LAX,
+        clean_nicks: bool = False
 ) -> dict:
-    async with AsyncAspxClient(provider, timeout, response_validation_mode) as client:
+    async with AsyncAspxClient(provider, timeout, response_validation_mode, clean_nicks) as client:
         return await client.getplayerinfo_dict(pid, key_set)
 
 
@@ -127,9 +133,10 @@ async def async_getunlocksinfo_dict(
         pid: int,
         provider: StatsProvider = StatsProvider.BF2HUB,
         timeout: float = 2.0,
-        response_validation_mode: ResponseValidationMode = ResponseValidationMode.LAX
+        response_validation_mode: ResponseValidationMode = ResponseValidationMode.LAX,
+        clean_nicks: bool = False
 ) -> dict:
-    async with AsyncAspxClient(provider, timeout, response_validation_mode) as client:
+    async with AsyncAspxClient(provider, timeout, response_validation_mode, clean_nicks) as client:
         return await client.getunlocksinfo_dict(pid)
 
 

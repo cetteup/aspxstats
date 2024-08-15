@@ -5,7 +5,7 @@ SEARCHFORPLAYERS_RESPONSE_SCHEMA: DictSchema = {
     'results': AttributeSchema(type=list, children={
         'n': AttributeSchema(type=str, is_numeric=True),
         'pid': AttributeSchema(type=str, is_numeric=True),
-        'nick': AttributeSchema(type=str),
+        'nick': AttributeSchema(type=str, is_nick=True),
         'score': AttributeSchema(type=str, is_numeric=True)
     })
 }
@@ -16,7 +16,7 @@ GETLEADERBOARD_RESPONSE_SCHEMA: DictSchema = {
     'entries': AttributeSchema(type=list, children={
         'n': AttributeSchema(type=str, is_numeric=True),
         'pid': AttributeSchema(type=str, is_numeric=True),
-        'nick': AttributeSchema(type=str),
+        'nick': AttributeSchema(type=str, is_nick=True),
         'playerrank': AttributeSchema(type=str, is_numeric=True),
         'countrycode': AttributeSchema(type=str)
     })
@@ -26,7 +26,7 @@ GETPLAYERINFO_GENERAL_STATS_RESPONSE_SCHEMA: DictSchema = {
     'asof': AttributeSchema(type=str, is_numeric=True),
     'data': {
         'pid': AttributeSchema(type=str, is_numeric=True),
-        'nick': AttributeSchema(type=str),
+        'nick': AttributeSchema(type=str, is_nick=True),
         'scor': AttributeSchema(type=str, is_numeric=True),
         'jond': AttributeSchema(type=str, is_numeric=True),
         'wins': AttributeSchema(type=str, is_numeric=True),
@@ -75,9 +75,9 @@ GETPLAYERINFO_GENERAL_STATS_RESPONSE_SCHEMA: DictSchema = {
         'tlwf': AttributeSchema(type=str, is_numeric=True),
         'mvks': AttributeSchema(type=str, is_numeric=True),
         'vmks': AttributeSchema(type=str, is_numeric=True),
-        'mvns': AttributeSchema(type=str),
+        'mvns': AttributeSchema(type=str, is_nick=True),
         'mvrs': AttributeSchema(type=str, is_numeric=True),
-        'vmns': AttributeSchema(type=str),
+        'vmns': AttributeSchema(type=str, is_nick=True),
         'vmrs': AttributeSchema(type=str, is_numeric=True),
         'fkit': AttributeSchema(type=str, is_numeric=True),
         'fmap': AttributeSchema(type=str, is_numeric=True),
@@ -268,7 +268,7 @@ GETPLAYERINFO_MAP_STATS_RESPONSE_SCHEMA: DictSchema = {
     'asof': AttributeSchema(type=str, is_numeric=True),
     'data': {
         'pid': AttributeSchema(type=str, is_numeric=True),
-        'nick': AttributeSchema(type=str),
+        'nick': AttributeSchema(type=str, is_nick=True),
         'mtm-0': AttributeSchema(type=str, is_numeric=True),
         'mtm-1': AttributeSchema(type=str, is_numeric=True),
         'mtm-2': AttributeSchema(type=str, is_numeric=True),
@@ -380,15 +380,15 @@ GETAWARDSINFO_RESPONSE_SCHEMA: DictSchema = {
 
 GETUNLOCKSINFO_RESPONSE_SCHEMA: DictSchema = {
     'pid': AttributeSchema(type=str, is_numeric=True),
-    'nick': AttributeSchema(type=str),
+    'nick': AttributeSchema(type=str, is_nick=True),
     'asof': AttributeSchema(type=str, is_numeric=True),
     'status': {
         'enlisted': AttributeSchema(type=str, is_numeric=True),
         'officer': AttributeSchema(type=str, is_numeric=True)
     },
     'data': AttributeSchema(type=list, children={
-        "id": AttributeSchema(type=str, is_numeric=True),
-        "state": AttributeSchema(type=str)
+        'id': AttributeSchema(type=str, is_numeric=True),
+        'state': AttributeSchema(type=str)
     })
 }
 
