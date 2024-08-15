@@ -19,6 +19,10 @@ class LineType(str, Enum):
     DATA = 'data'
 
 
+class CleanerType(str, Enum):
+    NICK = 'nick'
+
+
 class Dataset:
     keys: str
     data: List[str]

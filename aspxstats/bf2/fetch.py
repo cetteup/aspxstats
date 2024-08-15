@@ -13,9 +13,10 @@ def searchforplayers(
         sort: SearchSortOrder = SearchSortOrder.ASCENDING,
         provider: StatsProvider = StatsProvider.BF2HUB,
         timeout: float = 2.0,
-        response_validation_mode: ResponseValidationMode = ResponseValidationMode.LAX
+        response_validation_mode: ResponseValidationMode = ResponseValidationMode.LAX,
+        clean_nicks: bool = False
 ) -> PlayerSearchResponse:
-    with AspxClient(provider, timeout, response_validation_mode) as client:
+    with AspxClient(provider, timeout, response_validation_mode, clean_nicks) as client:
         return client.searchforplayers(nick, where, sort)
 
 
@@ -25,9 +26,10 @@ def searchforplayers_dict(
         sort: SearchSortOrder = SearchSortOrder.ASCENDING,
         provider: StatsProvider = StatsProvider.BF2HUB,
         timeout: float = 2.0,
-        response_validation_mode: ResponseValidationMode = ResponseValidationMode.LAX
+        response_validation_mode: ResponseValidationMode = ResponseValidationMode.LAX,
+        clean_nicks: bool = False
 ) -> dict:
-    with AspxClient(provider, timeout, response_validation_mode) as client:
+    with AspxClient(provider, timeout, response_validation_mode, clean_nicks) as client:
         return client.searchforplayers_dict(nick, where, sort)
 
 
@@ -45,9 +47,10 @@ def getleaderboard(
         pid: Optional[int] = None,
         provider: StatsProvider = StatsProvider.BF2HUB,
         timeout: float = 2.0,
-        response_validation_mode: ResponseValidationMode = ResponseValidationMode.LAX
+        response_validation_mode: ResponseValidationMode = ResponseValidationMode.LAX,
+        clean_nicks: bool = False
 ) -> LeaderboardResponse:
-    with AspxClient(provider, timeout, response_validation_mode) as client:
+    with AspxClient(provider, timeout, response_validation_mode, clean_nicks) as client:
         return client.getleaderboard(leaderboard_type, leaderboard_id, pos, before, after, pid)
 
 
@@ -65,9 +68,10 @@ def getleaderboard_dict(
         pid: Optional[int] = None,
         provider: StatsProvider = StatsProvider.BF2HUB,
         timeout: float = 2.0,
-        response_validation_mode: ResponseValidationMode = ResponseValidationMode.LAX
+        response_validation_mode: ResponseValidationMode = ResponseValidationMode.LAX,
+        clean_nicks: bool = False
 ) -> dict:
-    with AspxClient(provider, timeout, response_validation_mode) as client:
+    with AspxClient(provider, timeout, response_validation_mode, clean_nicks) as client:
         return client.getleaderboard_dict(leaderboard_type, leaderboard_id, pos, before, after, pid)
 
 
@@ -76,9 +80,10 @@ def getplayerinfo(
         key_set: PlayerinfoKeySet = PlayerinfoKeySet.GENERAL_STATS,
         provider: StatsProvider = StatsProvider.BF2HUB,
         timeout: float = 2.0,
-        response_validation_mode: ResponseValidationMode = ResponseValidationMode.LAX
+        response_validation_mode: ResponseValidationMode = ResponseValidationMode.LAX,
+        clean_nicks: bool = False
 ) -> PlayerinfoResponse:
-    with AspxClient(provider, timeout, response_validation_mode) as client:
+    with AspxClient(provider, timeout, response_validation_mode, clean_nicks) as client:
         return client.getplayerinfo(pid, key_set)
 
 
@@ -87,9 +92,10 @@ def getplayerinfo_dict(
         key_set: PlayerinfoKeySet = PlayerinfoKeySet.GENERAL_STATS,
         provider: StatsProvider = StatsProvider.BF2HUB,
         timeout: float = 2.0,
-        response_validation_mode: ResponseValidationMode = ResponseValidationMode.LAX
+        response_validation_mode: ResponseValidationMode = ResponseValidationMode.LAX,
+        clean_nicks: bool = False
 ) -> dict:
-    with AspxClient(provider, timeout, response_validation_mode) as client:
+    with AspxClient(provider, timeout, response_validation_mode, clean_nicks) as client:
         return client.getplayerinfo_dict(pid, key_set)
 
 
@@ -127,9 +133,10 @@ def getunlocksinfo_dict(
         pid: int,
         provider: StatsProvider = StatsProvider.BF2HUB,
         timeout: float = 2.0,
-        response_validation_mode: ResponseValidationMode = ResponseValidationMode.LAX
+        response_validation_mode: ResponseValidationMode = ResponseValidationMode.LAX,
+        clean_nicks: bool = False
 ) -> dict:
-    with AspxClient(provider, timeout, response_validation_mode) as client:
+    with AspxClient(provider, timeout, response_validation_mode, clean_nicks) as client:
         return client.getunlocksinfo_dict(pid)
 
 

@@ -34,3 +34,7 @@ def group_stats_by_item(
 
     return list(grouped.values())
 
+
+def clean_nick(nick: str) -> str:
+    return nick.split(' ').pop()
+

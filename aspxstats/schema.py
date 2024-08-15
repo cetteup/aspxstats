@@ -9,6 +9,7 @@ class AttributeSchema:
     is_booly: bool = False
     is_floaty: bool = False
     is_ratio: bool = False
+    is_nick: bool = False
     children: Optional[Dict[str, Union[dict, 'AttributeSchema']]] = None
 
 

@@ -1,9 +1,11 @@
 from dataclasses import dataclass
-from typing import Dict, Any, Union, List
+from typing import Dict, Any, Union, List, Optional, Callable
 from unittest import TestCase
 
+from aspxstats.bf2.utils import clean_nick
 from aspxstats.parsing import parse_dict_values
 from aspxstats.schema import AttributeSchema
+from aspxstats.types import CleanerType
 
 
 class ParsingTest(TestCase):
@@ -14,6 +16,7 @@ class ParsingTest(TestCase):
             data: Dict[str, Any]
             schema: Dict[str, Union[AttributeSchema, dict]]
             expected: Dict[str, Any]
+            cleaners: Optional[Dict[CleanerType, Callable[[str], str]]] = None
 
         # GIVEN
         tests: List[ParsingTestCase] = [
@@ -25,12 +28,14 @@ class ParsingTest(TestCase):
                     'booly-str': '0',
                     'floaty-str': '7.89',
                     'ratio-str': '123:789',
+                    'nick-str': 'some-nick',
                     'sub-dict': {
                         'sub-dict-str': 'some-string',
                         'sub-dict-numeric-str': '123456',
                         'sub-dict-booly-str': '0',
                         'sub-dict-floaty-str': '7.89',
                         'sub-dict-ratio-str': '123:789',
+                        'sub-dict-nick-str': 'some-nick',
                     },
                     'list-of-dicts': [
                         {
@@ -39,12 +44,14 @@ class ParsingTest(TestCase):
                             'list-of-dicts-booly-str': '0',
                             'list-of-dicts-floaty-str': '7.89',
                             'list-of-dicts-ratio-str': '123:789',
+                            'list-of-dicts-nick-str': 'some-nick',
                             'list-of-dicts-sub-dict': {
                                 'list-of-dicts-sub-dict-str': 'some-string',
                                 'list-of-dicts-sub-dict-numeric-str': '123456',
                                 'list-of-dicts-sub-dict-booly-str': '0',
                                 'list-of-dicts-sub-dict-floaty-str': '7.89',
                                 'list-of-dicts-sub-dict-ratio-str': '123:789',
+                                'list-of-dicts-sub-dict-nick-str': 'some-nick',
                             },
                         }
                     ]
@@ -55,12 +62,14 @@ class ParsingTest(TestCase):
                     'booly-str': AttributeSchema(type=str, is_booly=True),
                     'floaty-str': AttributeSchema(type=str, is_floaty=True),
                     'ratio-str': AttributeSchema(type=str, is_ratio=True),
+                    'nick-str': AttributeSchema(type=str, is_nick=True),
                     'sub-dict': {
                         'sub-dict-str': AttributeSchema(type=str),
                         'sub-dict-numeric-str': AttributeSchema(type=str, is_numeric=True),
                         'sub-dict-booly-str': AttributeSchema(type=str, is_booly=True),
                         'sub-dict-floaty-str': AttributeSchema(type=str, is_floaty=True),
                         'sub-dict-ratio-str': AttributeSchema(type=str, is_ratio=True),
+                        'sub-dict-nick-str': AttributeSchema(type=str, is_nick=True),
                     },
                     'list-of-dicts': AttributeSchema(type=list, children={
                         'list-of-dicts-str': AttributeSchema(type=str),
@@ -68,12 +77,14 @@ class ParsingTest(TestCase):
                         'list-of-dicts-booly-str': AttributeSchema(type=str, is_booly=True),
                         'list-of-dicts-floaty-str': AttributeSchema(type=str, is_floaty=True),
                         'list-of-dicts-ratio-str': AttributeSchema(type=str, is_ratio=True),
+                        'list-of-dicts-nick-str': AttributeSchema(type=str, is_nick=True),
                         'list-of-dicts-sub-dict': {
                             'list-of-dicts-sub-dict-str': AttributeSchema(type=str),
                             'list-of-dicts-sub-dict-numeric-str': AttributeSchema(type=str, is_numeric=True),
                             'list-of-dicts-sub-dict-booly-str': AttributeSchema(type=str, is_booly=True),
                             'list-of-dicts-sub-dict-floaty-str': AttributeSchema(type=str, is_floaty=True),
                             'list-of-dicts-sub-dict-ratio-str': AttributeSchema(type=str, is_ratio=True),
+                            'list-of-dicts-sub-dict-nick-str': AttributeSchema(type=str, is_nick=True),
                         },
                     })
                 },
@@ -83,12 +94,14 @@ class ParsingTest(TestCase):
                     'booly-str': False,
                     'floaty-str': 7.89,
                     'ratio-str': 0.16,
+                    'nick-str': 'some-nick',
                     'sub-dict': {
                         'sub-dict-str': 'some-string',
                         'sub-dict-numeric-str': 123456,
                         'sub-dict-booly-str': False,
                         'sub-dict-floaty-str': 7.89,
                         'sub-dict-ratio-str': 0.16,
+                        'sub-dict-nick-str': 'some-nick',
                     },
                     'list-of-dicts': [
                         {
@@ -97,12 +110,14 @@ class ParsingTest(TestCase):
                             'list-of-dicts-booly-str': False,
                             'list-of-dicts-floaty-str': 7.89,
                             'list-of-dicts-ratio-str': 0.16,
+                            'list-of-dicts-nick-str': 'some-nick',
                             'list-of-dicts-sub-dict': {
                                 'list-of-dicts-sub-dict-str': 'some-string',
                                 'list-of-dicts-sub-dict-numeric-str': 123456,
                                 'list-of-dicts-sub-dict-booly-str': False,
                                 'list-of-dicts-sub-dict-floaty-str': 7.89,
                                 'list-of-dicts-sub-dict-ratio-str': 0.16,
+                                'list-of-dicts-sub-dict-nick-str': 'some-nick',
                             },
                         }
                     ]
@@ -179,12 +194,30 @@ class ParsingTest(TestCase):
                 expected={
                     'ratio-str': 0.0,
                 }
+            ),
+            ParsingTestCase(
+                name='applies nick cleaner to nick string',
+                data={
+                    'str': '[tag] some-string',
+                    'nick-str': '[tag] some-nick',
+                },
+                schema={
+                    'str': AttributeSchema(type=str),
+                    'nick-str': AttributeSchema(type=str, is_nick=True),
+                },
+                cleaners={
+                    CleanerType.NICK: lambda nick: nick.split(' ').pop()
+                },
+                expected={
+                    'str': '[tag] some-string',
+                    'nick-str': 'some-nick',
+                }
             )
         ]
 
         for t in tests:
             # WHEN
-            parsed = parse_dict_values(t.data, t.schema)
+            parsed = parse_dict_values(t.data, t.schema, t.cleaners)
 
             # THEN
             self.assertDictEqual(t.expected, parsed)

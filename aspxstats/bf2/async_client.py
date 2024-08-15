@@ -16,9 +16,10 @@ class AsyncAspxClient(AspxClient, AsyncBaseAspxClient):
             self,
             provider: StatsProvider = StatsProvider.BF2HUB,
             timeout: float = 2.0,
-            response_validation_mode: ResponseValidationMode = ResponseValidationMode.LAX
+            response_validation_mode: ResponseValidationMode = ResponseValidationMode.LAX,
+            clean_nicks: bool = False,
     ):
-        super().__init__(provider, timeout, response_validation_mode)
+        super().__init__(provider, timeout, response_validation_mode, clean_nicks)
 
     async def searchforplayers(
             self,
