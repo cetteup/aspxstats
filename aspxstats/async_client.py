@@ -44,7 +44,7 @@ class AsyncAspxClient(AspxClient):
             response = await self.session.get(url, params=self.stringify_params(params), timeout=self.timeout)
 
             if response.ok:
-                return await response.text()
+                return await response.text(errors='replace')
             else:
                 raise ClientError(f'Failed to fetch ASPX data (HTTP/{response.status})')
         except requests.RequestException as e:
