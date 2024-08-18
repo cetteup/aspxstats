@@ -6,6 +6,10 @@ class ClientError(Error):
     pass
 
 
+class TimeoutError(Error):
+    pass
+
+
 class InvalidResponseError(Error):
     pass
 

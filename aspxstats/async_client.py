@@ -1,3 +1,4 @@
+import asyncio
 from enum import Enum
 from typing import Dict, Optional, Union
 from urllib.parse import urljoin
@@ -5,7 +6,7 @@ from urllib.parse import urljoin
 import aiohttp as aiohttp
 
 from .client import AspxClient
-from .exceptions import ClientError
+from .exceptions import ClientError, TimeoutError
 from .types import ResponseValidationMode
 
 
@@ -46,5 +47,7 @@ class AsyncAspxClient(AspxClient):
                 return await response.text(errors='replace')
             else:
                 raise ClientError(f'Failed to fetch ASPX data (HTTP/{response.status})')
+        except asyncio.TimeoutError:
+            raise TimeoutError('Timed out trying to fetch ASPX data')
         except aiohttp.ClientError as e:
             raise ClientError(f'Failed to fetch ASPX data: {e}')

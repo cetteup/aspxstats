@@ -1,4 +1,4 @@
-from .exceptions import Error, ClientError, InvalidResponseError, NotFoundError, InvalidParameterError
+from .exceptions import Error, ClientError, TimeoutError, InvalidResponseError, NotFoundError, InvalidParameterError
 from .types import ResponseValidationMode
 
 """
@@ -14,6 +14,7 @@ __all__ = [
     'ResponseValidationMode',
     'Error',
     'ClientError',
+    'TimeoutError',
     'InvalidResponseError',
     'NotFoundError',
     'InvalidParameterError'

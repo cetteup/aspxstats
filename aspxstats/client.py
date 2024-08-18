@@ -5,7 +5,7 @@ from urllib.parse import urljoin
 
 import requests as requests
 
-from .exceptions import ClientError, InvalidResponseError, Error
+from .exceptions import ClientError, InvalidResponseError, Error, TimeoutError
 from .types import LineType, Dataset, ParseTarget, ResponseValidationMode
 
 
@@ -57,6 +57,8 @@ class AspxClient:
                 return response.text
             else:
                 raise ClientError(f'Failed to fetch ASPX data (HTTP/{response.status_code})')
+        except requests.Timeout:
+            raise TimeoutError('Timed out trying to fetch ASPX data')
         except requests.RequestException as e:
             raise ClientError(f'Failed to fetch ASPX data: {e}')
 
