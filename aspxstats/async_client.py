@@ -3,7 +3,6 @@ from typing import Dict, Optional, Union
 from urllib.parse import urljoin
 
 import aiohttp as aiohttp
-import requests as requests
 
 from .client import AspxClient
 from .exceptions import ClientError
@@ -47,5 +46,5 @@ class AsyncAspxClient(AspxClient):
                 return await response.text(errors='replace')
             else:
                 raise ClientError(f'Failed to fetch ASPX data (HTTP/{response.status})')
-        except requests.RequestException as e:
+        except aiohttp.ClientError as e:
             raise ClientError(f'Failed to fetch ASPX data: {e}')
