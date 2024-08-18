@@ -60,7 +60,7 @@ class AspxClient:
         except requests.Timeout:
             raise TimeoutError('Timed out trying to fetch ASPX data')
         except requests.RequestException as e:
-            raise ClientError(f'Failed to fetch ASPX data: {e}')
+            raise ClientError(f'Failed to fetch ASPX data: {e}') from None
 
     @staticmethod
     def stringify_params(

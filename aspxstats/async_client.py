@@ -50,4 +50,4 @@ class AsyncAspxClient(AspxClient):
         except asyncio.TimeoutError:
             raise TimeoutError('Timed out trying to fetch ASPX data')
         except aiohttp.ClientError as e:
-            raise ClientError(f'Failed to fetch ASPX data: {e}')
+            raise ClientError(f'Failed to fetch ASPX data: {e}') from None
