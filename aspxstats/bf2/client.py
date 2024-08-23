@@ -213,11 +213,15 @@ class AspxClient(BaseAspxClient):
         vmrs (top opponent rank)
         BF2Hub handles it better in most cases, but also has players with an empty string mvrs/vmrs or even more
         interesting values such as "NOT VAILABLE" for tvcr (pid 10226681 asof 1617839795)
+        They also frequently return "NOT VAILABLE" for map stats values (pid 7568965 asof 1175020033)
         => replace any invalid values with 0 (but don't add it if the key is missing)
         """
-        for key in ['tvcr', 'topr', 'mvrs', 'vmrs']:
-            value = parsed['data'].get(key)
-            if value is not None and not is_numeric(value):
+        keys = {'tvcr', 'topr', 'mvrs', 'vmrs'}
+        prefixes = {'mtm-', 'mwn-', 'mls-'}
+        for key, value in parsed['data'].items():
+            matches_key = key in keys
+            matches_prefix = key[:4] in prefixes
+            if (matches_key or matches_prefix) and not is_numeric(value):
                 parsed['data'][key] = '0'
 
         return parsed

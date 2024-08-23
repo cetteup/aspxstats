@@ -659,7 +659,10 @@ class AspxClientTest(unittest.TestCase):
                         'tvcr': '',
                         'topr': ' ',
                         'mvrs': 'NOT VAILABLE',
-                        'vmrs': '0'
+                        'vmrs': '_',
+                        'mtm-0': '',
+                        'mwn-0': ' ',
+                        'mls-0': 'NOT VAILABLE'
                     }
                 },
                 expected={
@@ -667,7 +670,10 @@ class AspxClientTest(unittest.TestCase):
                         'tvcr': '0',
                         'topr': '0',
                         'mvrs': '0',
-                        'vmrs': '0'
+                        'vmrs': '0',
+                        'mtm-0': '0',
+                        'mwn-0': '0',
+                        'mls-0': '0'
                     }
                 }
             ),
@@ -678,7 +684,10 @@ class AspxClientTest(unittest.TestCase):
                         'tvcr': '1000',
                         'topr': '2000',
                         'mvrs': '3000',
-                        'vmrs': '4000'
+                        'vmrs': '4000',
+                        'mtm-0': '5000',
+                        'mwn-0': '6000',
+                        'mls-0': '7000'
                     }
                 },
                 expected={
@@ -686,7 +695,10 @@ class AspxClientTest(unittest.TestCase):
                         'tvcr': '1000',
                         'topr': '2000',
                         'mvrs': '3000',
-                        'vmrs': '4000'
+                        'vmrs': '4000',
+                        'mtm-0': '5000',
+                        'mwn-0': '6000',
+                        'mls-0': '7000'
                     }
                 }
             ),
@@ -697,7 +709,10 @@ class AspxClientTest(unittest.TestCase):
                         'tvcr': '',
                         'topr': ' ',
                         'mvrs': 'NOT VAILABLE',
-                        'vmrs': '0',
+                        'vmrs': '_',
+                        'mtm-0': '',
+                        'mwn-0': ' ',
+                        'mls-0': 'NOT VAILABLE',
                         'some-other-key': 'some-value'
                     },
                     'some-other-key': 'some-value'
@@ -708,6 +723,9 @@ class AspxClientTest(unittest.TestCase):
                         'topr': '0',
                         'mvrs': '0',
                         'vmrs': '0',
+                        'mtm-0': '0',
+                        'mwn-0': '0',
+                        'mls-0': '0',
                         'some-other-key': 'some-value'
                     },
                     'some-other-key': 'some-value'
