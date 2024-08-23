@@ -217,7 +217,12 @@ class AspxClient(BaseAspxClient):
         => replace any invalid values with 0 (but don't add it if the key is missing)
         """
         keys = {'tvcr', 'topr', 'mvrs', 'vmrs'}
-        prefixes = {'mtm-', 'mwn-', 'mls-'}
+        prefixes = {
+            'vtm-', 'vkl-', 'vdt-', 'vkr-',  # vehicle stats prefixes
+            'atm-', 'awn-', 'alo-', 'abr-',  # army stats prefixes
+            'ktm-', 'kkl-', 'kdt-',  # kit stats prefixes
+            'mtm-', 'mwn-', 'mls-'  # map stats prefixes
+        }
         for key, value in parsed['data'].items():
             matches_key = key in keys
             matches_prefix = key[:4] in prefixes
