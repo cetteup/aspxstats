@@ -1,30 +1,46 @@
-from typing import Dict, Union
+from typing import Dict, Union, Tuple, Optional, Any
 
 from .schema import AttributeSchema
 
 
-def is_valid_dict(data: dict, schema: Dict[str, Union[dict, AttributeSchema]]) -> bool:
-    return all(is_valid_attribute(data.get(key), attribute_schema) for (key, attribute_schema) in schema.items())
+def is_valid_dict(
+        data: dict,
+        schema: Dict[str, Union[dict, AttributeSchema]],
+        root: str = ''
+) -> Tuple[bool, Optional[str], Optional[Any]]:
+    for key, attribute_schema in schema.items():
+        valid, path, attribute = is_valid_attribute(join(root, key), data.get(key), attribute_schema)
+        if not valid:
+            return False, path, attribute
+    return True, None, None
 
 
-def is_valid_attribute(attribute: Union[str, dict, list], schema: Dict[str, Union[dict, AttributeSchema]]) -> bool:
+def is_valid_attribute(
+        path: str,
+        attribute: Union[str, dict, list],
+        schema: Union[AttributeSchema, Dict[str, AttributeSchema]]
+) -> Tuple[bool, Optional[str], Optional[Any]]:
     if isinstance(schema, AttributeSchema):
         if isinstance(attribute, str) and schema.type == str and schema.is_numeric:
-            return is_numeric(attribute)
+            return is_numeric(attribute), path, attribute
         if isinstance(attribute, str) and schema.type == str and schema.is_booly:
-            return is_booly(attribute)
+            return is_booly(attribute), path, attribute
         if isinstance(attribute, str) and schema.type == str and schema.is_floaty:
-            return is_floaty(attribute)
+            return is_floaty(attribute), path, attribute
         if isinstance(attribute, str) and schema.type == str and schema.is_ratio:
-            return is_ratio(attribute)
+            return is_ratio(attribute), path, attribute
         if isinstance(attribute, list) and schema.type == list:
-            return all(is_valid_attribute(child, schema.children) for child in attribute)
-        else:
-            return isinstance(attribute, schema.type)
+            for index, child in enumerate(attribute):
+                child_valid, child_path, child_attribute = is_valid_attribute(join(path, index), child, schema.children)
+                if not child_valid:
+                    return False, child_path, child_attribute
+            return True, None, None
+
+        return isinstance(attribute, schema.type), path, attribute
     elif isinstance(attribute, dict) and isinstance(schema, dict):
-        return is_valid_dict(attribute, schema)
-    else:
-        return False
+        return is_valid_dict(attribute, schema, root=path)
+
+    return False, path, attribute
 
 
 def is_numeric(value: str) -> bool:
@@ -67,3 +83,10 @@ def is_ratio(value: str) -> bool:
     """
     elements = value.split(':', 1)
     return len(elements) == 2 and all(is_numeric(elem) for elem in elements) or value == '0'
+
+
+def join(path: str, key: Union[str, int]) -> str:
+    if path == '':
+        return key
+
+    return path + '.' + str(key)

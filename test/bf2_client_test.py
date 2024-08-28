@@ -1,6 +1,6 @@
 import unittest
 from dataclasses import dataclass
-from typing import List
+from typing import List, Tuple, Optional, Any
 
 from aspxstats import InvalidParameterError
 from aspxstats.bf2 import AspxClient, StatsProvider
@@ -14,7 +14,7 @@ class AspxClientTest(unittest.TestCase):
         class SearchforplayersTestCase:
             name: str
             parsed: dict
-            wantIsValid: bool
+            expected: Tuple[bool, Optional[str], Optional[Any]]
 
         # GIVEN
         tests: List[SearchforplayersTestCase] = [
@@ -37,7 +37,7 @@ class AspxClientTest(unittest.TestCase):
                         }
                     ]
                 },
-                wantIsValid=True
+                expected=(True, None, None)
             ),
             SearchforplayersTestCase(
                 name='true for valid searchforplayers data without any results',
@@ -45,7 +45,7 @@ class AspxClientTest(unittest.TestCase):
                     'asof': '1663447766',
                     'results': []
                 },
-                wantIsValid=True
+                expected=(True, None, None)
             ),
             SearchforplayersTestCase(
                 name='false for missing asof',
@@ -59,7 +59,7 @@ class AspxClientTest(unittest.TestCase):
                         },
                     ]
                 },
-                wantIsValid=False
+                expected=(False, 'asof', None),
             ),
             SearchforplayersTestCase(
                 name='false for non-string asof',
@@ -74,14 +74,14 @@ class AspxClientTest(unittest.TestCase):
                         },
                     ]
                 },
-                wantIsValid=False
+                expected=(False, 'asof', 1663447766),
             ),
             SearchforplayersTestCase(
                 name='false for results missing',
                 parsed={
                     'asof': '1663447766'
                 },
-                wantIsValid=False
+                expected=(False, 'results', None)
             ),
             SearchforplayersTestCase(
                 name='false for non-list results',
@@ -89,7 +89,7 @@ class AspxClientTest(unittest.TestCase):
                     'asof': '1663447766',
                     'results': 'not-a-list'
                 },
-                wantIsValid=False
+                expected=(False, 'results', 'not-a-list')
             ),
             SearchforplayersTestCase(
                 name='false for non-dict in results',
@@ -99,7 +99,7 @@ class AspxClientTest(unittest.TestCase):
                         'not-a-dict'
                     ]
                 },
-                wantIsValid=False
+                expected=(False, 'results.0', 'not-a-dict')
             ),
             SearchforplayersTestCase(
                 name='false for search result containing non-numeric-string numeric-string attribute',
@@ -107,14 +107,14 @@ class AspxClientTest(unittest.TestCase):
                     'asof': '1663447766',
                     'results': [
                         {
-                            'n': 'abddef',
+                            'n': 'abcdef',
                             'pid': '45377286',
                             'nick': 'mister249',
                             'score': '6458'
                         },
                     ]
                 },
-                wantIsValid=False
+                expected=(False, 'results.0.n', 'abcdef')
             ),
             SearchforplayersTestCase(
                 name='false for search result containing non-string string attribute',
@@ -129,7 +129,7 @@ class AspxClientTest(unittest.TestCase):
                         },
                     ]
                 },
-                wantIsValid=False
+                expected=(False, 'results.0.nick', 123456)
             ),
             SearchforplayersTestCase(
                 name='false for search result missing an attribute',
@@ -143,7 +143,7 @@ class AspxClientTest(unittest.TestCase):
                         },
                     ]
                 },
-                wantIsValid=False
+                expected=(False, 'results.0.n', None)
             ),
             SearchforplayersTestCase(
                 name='false for valid search result followed by invalid',
@@ -164,23 +164,23 @@ class AspxClientTest(unittest.TestCase):
                         }
                     ]
                 },
-                wantIsValid=False
+                expected=(False, 'results.1.score', 86136)
             ),
         ]
 
         for t in tests:
             # WHEN
-            valid = AspxClient.is_valid_searchforplayers_response_data(t.parsed)
+            actual = AspxClient.is_valid_searchforplayers_response_data(t.parsed)
 
             # THEN
-            self.assertEqual(t.wantIsValid, valid, f'"{t.name}" failed\nexpected: {t.wantIsValid}\nactual: {valid}')
+            self.assertEqual(t.expected, actual, f'"{t.name}" failed\nexpected: {t.expected}\nactual: {actual}')
 
     def test_is_valid_getleaderboard_response_data(self):
         @dataclass
         class GetleaderboardTestCase:
             name: str
             parsed: dict
-            wantIsValid: bool
+            expected: Tuple[bool, Optional[str], Optional[Any]]
 
         # GIVEN
         tests: List[GetleaderboardTestCase] = [
@@ -206,7 +206,7 @@ class AspxClientTest(unittest.TestCase):
                         }
                     ]
                 },
-                wantIsValid=True
+                expected=(True, None, None)
             ),
             GetleaderboardTestCase(
                 name='true for valid getleaderboard data without any entries',
@@ -215,7 +215,7 @@ class AspxClientTest(unittest.TestCase):
                     'asof': '1663447766',
                     'entries': []
                 },
-                wantIsValid=True
+                expected=(True, None, None)
             ),
             GetleaderboardTestCase(
                 name='false for missing size',
@@ -227,11 +227,11 @@ class AspxClientTest(unittest.TestCase):
                             'pid': '45377286',
                             'nick': 'mister249',
                             'playerrank': '13',
-                            'country_code': 'DE'
+                            'countrycode': 'DE'
                         }
                     ]
                 },
-                wantIsValid=False
+                expected=(False, 'size', None),
             ),
             GetleaderboardTestCase(
                 name='false for non-string size',
@@ -244,30 +244,32 @@ class AspxClientTest(unittest.TestCase):
                             'pid': '45377286',
                             'nick': 'mister249',
                             'playerrank': '13',
-                            'country_code': 'DE'
+                            'countrycode': 'DE'
                         }
                     ]
                 },
-                wantIsValid=False
+                expected=(False, 'size', 100000),
             ),
             GetleaderboardTestCase(
                 name='false for missing asof',
                 parsed={
+                    'size': '100000',
                     'entries': [
                         {
                             'n': '1',
                             'pid': '45377286',
                             'nick': 'mister249',
                             'playerrank': '13',
-                            'country_code': 'DE'
+                            'countrycode': 'DE'
                         }
                     ]
                 },
-                wantIsValid=False
+                expected=(False, 'asof', None),
             ),
             GetleaderboardTestCase(
                 name='false for non-string asof',
                 parsed={
+                    'size': '100000',
                     'asof': 1663447766,
                     'entries': [
                         {
@@ -275,11 +277,11 @@ class AspxClientTest(unittest.TestCase):
                             'pid': '45377286',
                             'nick': 'mister249',
                             'playerrank': '13',
-                            'country_code': 'DE'
+                            'countrycode': 'DE'
                         }
                     ]
                 },
-                wantIsValid=False
+                expected=(False, 'asof', 1663447766),
             ),
             GetleaderboardTestCase(
                 name='false for entries missing',
@@ -287,7 +289,7 @@ class AspxClientTest(unittest.TestCase):
                     'size': '100000',
                     'asof': '1663447766',
                 },
-                wantIsValid=False
+                expected=(False, 'entries', None),
             ),
             GetleaderboardTestCase(
                 name='false for non-list entries',
@@ -296,7 +298,7 @@ class AspxClientTest(unittest.TestCase):
                     'asof': '1663447766',
                     'entries': 'not-a-list'
                 },
-                wantIsValid=False
+                expected=(False, 'entries', 'not-a-list'),
             ),
             GetleaderboardTestCase(
                 name='false for non-dict in entries',
@@ -307,7 +309,7 @@ class AspxClientTest(unittest.TestCase):
                         'not-a-dict'
                     ]
                 },
-                wantIsValid=False
+                expected=(False, 'entries.0', 'not-a-dict')
             ),
             GetleaderboardTestCase(
                 name='false for search result containing non-numeric-string numeric-string attribute',
@@ -320,11 +322,11 @@ class AspxClientTest(unittest.TestCase):
                             'pid': '45377286',
                             'nick': 'mister249',
                             'playerrank': '13',
-                            'country_code': 'DE'
+                            'countrycode': 'DE'
                         }
                     ]
                 },
-                wantIsValid=False
+                expected=(False, 'entries.0.n', 'abcdef')
             ),
             GetleaderboardTestCase(
                 name='false for search result containing non-string string attribute',
@@ -337,11 +339,11 @@ class AspxClientTest(unittest.TestCase):
                             'pid': '45377286',
                             'nick': 123456,
                             'playerrank': '13',
-                            'country_code': 'DE'
+                            'countrycode': 'DE'
                         }
                     ]
                 },
-                wantIsValid=False
+                expected=(False, 'entries.0.nick', 123456)
             ),
             GetleaderboardTestCase(
                 name='false for search result missing an attribute',
@@ -353,11 +355,11 @@ class AspxClientTest(unittest.TestCase):
                             'pid': '45377286',
                             'nick': 'mister249',
                             'playerrank': '13',
-                            'country_code': 'DE'
+                            'countrycode': 'DE'
                         },
                     ]
                 },
-                wantIsValid=False
+                expected=(False, 'entries.0.n', None)
             ),
             GetleaderboardTestCase(
                 name='false for valid search result followed by invalid',
@@ -370,27 +372,27 @@ class AspxClientTest(unittest.TestCase):
                             'pid': '45377286',
                             'nick': 'mister249',
                             'playerrank': '13',
-                            'country_code': 'DE'
+                            'countrycode': 'DE'
                         },
                         {
                             'n': '2',
                             'pid': '500362798',
                             'nick': 'mister2499',
                             'playerrank': 8,
-                            'country_code': 'UA'
+                            'countrycode': 'UA'
                         }
                     ]
                 },
-                wantIsValid=False
+                expected=(False, 'entries.1.playerrank', 8),
             ),
         ]
 
         for t in tests:
             # WHEN
-            valid = AspxClient.is_valid_getleaderboard_response_data(t.parsed)
+            actual = AspxClient.is_valid_getleaderboard_response_data(t.parsed)
 
             # THEN
-            self.assertEqual(t.wantIsValid, valid, f'"{t.name}" failed\nexpected: {t.wantIsValid}\nactual: {valid}')
+            self.assertEqual(t.expected, actual, f'"{t.name}" failed\nexpected: {t.expected}\nactual: {actual}')
 
     def test_is_valid_getplayerinfo_response_data_general_stats_player_attributes(self):
         # GIVEN
@@ -469,10 +471,10 @@ class AspxClientTest(unittest.TestCase):
         ]
 
         # WHEN
-        valid = AspxClient.is_valid_getplayerinfo_response_data(PlayerinfoKeySet.GENERAL_STATS, parsed)
+        actual = AspxClient.is_valid_getplayerinfo_response_data(PlayerinfoKeySet.GENERAL_STATS, parsed)
 
         # THEN
-        self.assertTrue(valid)
+        self.assertEqual(actual, (True, None, None))
 
         for key in parsed.keys():
             # Test with a copy
@@ -485,17 +487,17 @@ class AspxClientTest(unittest.TestCase):
             # GIVEN
             parsed_copy[key] = 123456
             # WHEN
-            valid = AspxClient.is_valid_getplayerinfo_response_data(PlayerinfoKeySet.GENERAL_STATS, parsed_copy)
+            actual = AspxClient.is_valid_getplayerinfo_response_data(PlayerinfoKeySet.GENERAL_STATS, parsed_copy)
             # THEN
-            self.assertFalse(valid, f'"{key}" with non-string value failed')
+            self.assertEqual(actual, (False, key, 123456), f'"{key}" with non-string value failed')
 
             # Every attribute must be present => test without it
             # GIVEN
             del parsed_copy[key]
             # WHEN
-            valid = AspxClient.is_valid_getplayerinfo_response_data(PlayerinfoKeySet.GENERAL_STATS, parsed_copy)
+            actual = AspxClient.is_valid_getplayerinfo_response_data(PlayerinfoKeySet.GENERAL_STATS, parsed_copy)
             # THEN
-            self.assertFalse(valid, f'"{key}" missing failed')
+            self.assertEqual(actual, (False, key, None), f'"{key}" missing failed')
 
         for key in parsed['data'].keys():
             # Test with a copy
@@ -508,44 +510,44 @@ class AspxClientTest(unittest.TestCase):
             # GIVEN
             parsed_copy['data'][key] = 123456
             # WHEN
-            valid = AspxClient.is_valid_getplayerinfo_response_data(PlayerinfoKeySet.GENERAL_STATS, parsed_copy)
+            actual = AspxClient.is_valid_getplayerinfo_response_data(PlayerinfoKeySet.GENERAL_STATS, parsed_copy)
             # THEN
-            self.assertFalse(valid, f'"{key}" with non-string value failed')
+            self.assertEqual(actual, (False, f'data.{key}', 123456), f'"{key}" with non-string value failed')
 
             # Every attribute must be present => test without it
             # GIVEN
             del parsed_copy['data'][key]
             # WHEN
-            valid = AspxClient.is_valid_getplayerinfo_response_data(PlayerinfoKeySet.GENERAL_STATS, parsed_copy)
+            actual = AspxClient.is_valid_getplayerinfo_response_data(PlayerinfoKeySet.GENERAL_STATS, parsed_copy)
             # THEN
-            self.assertFalse(valid, f'"{key}" missing failed')
+            self.assertEqual(actual, (False, f'data.{key}', None), f'"{key}" missing failed')
 
             if key in numeric_keys:
                 # Attribute should be numeric => test with a non-numeric-string
                 # GIVEN
                 parsed_copy['data'][key] = 'not-a-numeric-string'
                 # WHEN
-                valid = AspxClient.is_valid_getplayerinfo_response_data(PlayerinfoKeySet.GENERAL_STATS, parsed_copy)
+                actual = AspxClient.is_valid_getplayerinfo_response_data(PlayerinfoKeySet.GENERAL_STATS, parsed_copy)
                 # THEN
-                self.assertFalse(valid, f'"{key}" with non-numeric-string value failed')
+                self.assertEqual(actual, (False, f'data.{key}', 'not-a-numeric-string'), f'"{key}" with non-numeric-string value failed')
 
             if key in booly_keys:
                 # Attribute should be boolean-like numeric string => test with a non-booly-string
                 # GIVEN
                 parsed_copy['data'][key] = '2'
                 # WHEN
-                valid = AspxClient.is_valid_getplayerinfo_response_data(PlayerinfoKeySet.GENERAL_STATS, parsed_copy)
+                actual = AspxClient.is_valid_getplayerinfo_response_data(PlayerinfoKeySet.GENERAL_STATS, parsed_copy)
                 # THEN
-                self.assertFalse(valid, f'"{key}" with non-booly-string value failed')
+                self.assertEqual(actual, (False, f'data.{key}', '2'), f'"{key}" with non-booly-string value failed')
 
             if key in floaty_keys:
                 # Attribute should be floaty => test with a non-floaty-string
                 # GIVEN
                 parsed_copy['data'][key] = 'not-a-floaty-string'
                 # WHEN
-                valid = AspxClient.is_valid_getplayerinfo_response_data(PlayerinfoKeySet.GENERAL_STATS, parsed_copy)
+                actual = AspxClient.is_valid_getplayerinfo_response_data(PlayerinfoKeySet.GENERAL_STATS, parsed_copy)
                 # THEN
-                self.assertFalse(valid, f'"{key}" with non-floaty-string value failed')
+                self.assertEqual(actual, (False, f'data.{key}', 'not-a-floaty-string'), f'"{key}" with non-floaty-string value failed')
 
     def test_is_valid_getplayerinfo_response_data_map_stats_player_attributes(self):
         # GIVEN
@@ -583,10 +585,10 @@ class AspxClientTest(unittest.TestCase):
         ]
 
         # WHEN
-        valid = AspxClient.is_valid_getplayerinfo_response_data(PlayerinfoKeySet.MAP_STATS, parsed)
+        actual = AspxClient.is_valid_getplayerinfo_response_data(PlayerinfoKeySet.MAP_STATS, parsed)
 
         # THEN
-        self.assertTrue(valid)
+        self.assertEqual(actual, (True, None, None))
 
         for key in parsed.keys():
             # Test with a copy
@@ -599,17 +601,17 @@ class AspxClientTest(unittest.TestCase):
             # GIVEN
             parsed_copy[key] = 123456
             # WHEN
-            valid = AspxClient.is_valid_getplayerinfo_response_data(PlayerinfoKeySet.MAP_STATS, parsed_copy)
+            actual = AspxClient.is_valid_getplayerinfo_response_data(PlayerinfoKeySet.MAP_STATS, parsed_copy)
             # THEN
-            self.assertFalse(valid, f'"{key}" with non-string value failed')
+            self.assertEqual(actual, (False, key, 123456), f'"{key}" with non-string value failed')
 
             # Every attribute must be present => test without it
             # GIVEN
             del parsed_copy[key]
             # WHEN
-            valid = AspxClient.is_valid_getplayerinfo_response_data(PlayerinfoKeySet.MAP_STATS, parsed_copy)
+            actual = AspxClient.is_valid_getplayerinfo_response_data(PlayerinfoKeySet.MAP_STATS, parsed_copy)
             # THEN
-            self.assertFalse(valid, f'"{key}" missing failed')
+            self.assertEqual(actual, (False, key, None), f'"{key}" missing failed')
 
         for key in parsed['data'].keys():
             # Test with a copy
@@ -622,26 +624,26 @@ class AspxClientTest(unittest.TestCase):
             # GIVEN
             parsed_copy['data'][key] = 123456
             # WHEN
-            valid = AspxClient.is_valid_getplayerinfo_response_data(PlayerinfoKeySet.MAP_STATS, parsed_copy)
+            actual = AspxClient.is_valid_getplayerinfo_response_data(PlayerinfoKeySet.MAP_STATS, parsed_copy)
             # THEN
-            self.assertFalse(valid, f'"{key}" with non-string value failed')
+            self.assertEqual(actual, (False, f'data.{key}', 123456), f'"{key}" with non-string value failed')
 
             # Every attribute must be present => test without it
             # GIVEN
             del parsed_copy['data'][key]
             # WHEN
-            valid = AspxClient.is_valid_getplayerinfo_response_data(PlayerinfoKeySet.MAP_STATS, parsed_copy)
+            actual = AspxClient.is_valid_getplayerinfo_response_data(PlayerinfoKeySet.MAP_STATS, parsed_copy)
             # THEN
-            self.assertFalse(valid, f'"{key}" missing failed')
+            self.assertEqual(actual, (False, f'data.{key}', None), f'"{key}" missing failed')
 
             if key in numeric_keys:
                 # Attribute should be numeric => test with a non-numeric-string
                 # GIVEN
                 parsed_copy['data'][key] = 'not-a-numeric-string'
                 # WHEN
-                valid = AspxClient.is_valid_getplayerinfo_response_data(PlayerinfoKeySet.MAP_STATS, parsed_copy)
+                actual = AspxClient.is_valid_getplayerinfo_response_data(PlayerinfoKeySet.MAP_STATS, parsed_copy)
                 # THEN
-                self.assertFalse(valid, f'"{key}" with non-numeric-string value failed')
+                self.assertEqual(actual, (False, f'data.{key}', 'not-a-numeric-string'), f'"{key}" with non-numeric-string value failed')
 
     def test_fix_getplayerinfo_zero_values(self):
         @dataclass
@@ -780,7 +782,7 @@ class AspxClientTest(unittest.TestCase):
         class GetrankinfoTestCase:
             name: str
             parsed: dict
-            wantIsValid: bool
+            expected: Tuple[bool, Optional[str], Optional[Any]]
 
         # GIVEN
         tests: List[GetrankinfoTestCase] = [
@@ -793,7 +795,7 @@ class AspxClientTest(unittest.TestCase):
                         'decr': '0'
                     }
                 },
-                wantIsValid=True
+                expected=(True, None, None)
             ),
             GetrankinfoTestCase(
                 name='false for missing data',
@@ -802,14 +804,14 @@ class AspxClientTest(unittest.TestCase):
                         'some_value': '5',
                     }
                 },
-                wantIsValid=False
+                expected=(False, 'data', None)
             ),
             GetrankinfoTestCase(
                 name='false for non-dict data',
                 parsed={
                     'data': 'some-value'
                 },
-                wantIsValid=False
+                expected=(False, 'data', 'some-value')
             ),
             GetrankinfoTestCase(
                 name='false for data containing non-numeric-string numeric-string attribute',
@@ -820,7 +822,7 @@ class AspxClientTest(unittest.TestCase):
                         'decr': '0'
                     }
                 },
-                wantIsValid=False
+                expected=(False, 'data.rank', 'abcdef')
             ),
             GetrankinfoTestCase(
                 name='false for data containing non-booly-string booly-string attribute',
@@ -831,7 +833,7 @@ class AspxClientTest(unittest.TestCase):
                         'decr': '0'
                     }
                 },
-                wantIsValid=False
+                expected=(False, 'data.chng', '2')
             ),
             GetrankinfoTestCase(
                 name='false for missing data attribute',
@@ -841,16 +843,16 @@ class AspxClientTest(unittest.TestCase):
                         'decr': '0'
                     }
                 },
-                wantIsValid=False
+                expected=(False, 'data.rank', None)
             )
         ]
 
         for t in tests:
             # WHEN
-            valid = AspxClient.is_valid_getrankinfo_response_data(t.parsed)
+            actual = AspxClient.is_valid_getrankinfo_response_data(t.parsed)
 
             # THEN
-            self.assertEqual(t.wantIsValid, valid, f'"{t.name}" failed\nexpected: {t.wantIsValid}\nactual: {valid}')
+            self.assertEqual(t.expected, actual, f'"{t.name}" failed\nexpected: {t.expected}\nactual: {actual}')
 
     def test_get_provider_config(self):
         # GIVEN

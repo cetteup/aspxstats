@@ -1,4 +1,4 @@
-from typing import Dict, Optional, Union, Callable
+from typing import Dict, Optional, Union, Callable, Tuple, Any
 
 from .schemas import GETLEADERBOARD_RESPONSE_SCHEMA, SEARCHFORPLAYERS_RESPONSE_SCHEMA, \
     GETPLAYERINFO_GENERAL_STATS_RESPONSE_SCHEMA, GETPLAYERINFO_MAP_STATS_RESPONSE_SCHEMA, GETRANKINFO_RESPONSE_SCHEMA, \
@@ -63,14 +63,18 @@ class AspxClient(BaseAspxClient):
             ParseTarget('results', as_list=True)
         ])
 
-        valid_data = self.is_valid_searchforplayers_response_data(parsed)
+        valid_data, invalid_path, invalid_attribute = self.is_valid_searchforplayers_response_data(parsed)
         if not valid_data:
-            raise InvalidResponseError(f'{self.provider} returned invalid searchforplayers response data')
+            raise InvalidResponseError(
+                f'{self.provider} returned invalid searchforplayers response data',
+                invalid_path,
+                invalid_attribute
+            )
 
         return self.parse_searchforplayers_response_values(parsed, self.cleaners)
 
     @staticmethod
-    def is_valid_searchforplayers_response_data(parsed: dict) -> bool:
+    def is_valid_searchforplayers_response_data(parsed: dict) -> Tuple[bool, Optional[str], Optional[Any]]:
         return is_valid_dict(parsed, SEARCHFORPLAYERS_RESPONSE_SCHEMA)
 
     @staticmethod
@@ -132,14 +136,18 @@ class AspxClient(BaseAspxClient):
             ParseTarget('entries', as_list=True)
         ])
 
-        valid_data = self.is_valid_getleaderboard_response_data(parsed)
+        valid_data, invalid_path, invalid_attribute = self.is_valid_getleaderboard_response_data(parsed)
         if not valid_data:
-            raise InvalidResponseError(f'{self.provider} returned invalid getleaderboard response data')
+            raise InvalidResponseError(
+                f'{self.provider} returned invalid getleaderboard response data',
+                invalid_path,
+                invalid_attribute
+            )
 
         return self.parse_getleaderboard_response_values(parsed, self.cleaners)
 
     @staticmethod
-    def is_valid_getleaderboard_response_data(parsed: dict) -> bool:
+    def is_valid_getleaderboard_response_data(parsed: dict) -> Tuple[bool, Optional[str], Optional[Any]]:
         # TODO: Add per-leaderboard validation with respective attributes
         return is_valid_dict(parsed, GETLEADERBOARD_RESPONSE_SCHEMA)
 
@@ -192,9 +200,13 @@ class AspxClient(BaseAspxClient):
 
         parsed = self.fix_getplayerinfo_zero_values(parsed)
 
-        valid_data = self.is_valid_getplayerinfo_response_data(key_set, parsed)
+        valid_data, invalid_path, invalid_attribute = self.is_valid_getplayerinfo_response_data(key_set, parsed)
         if not valid_data:
-            raise InvalidResponseError(f'{self.provider} returned invalid getplayerinfo response data')
+            raise InvalidResponseError(
+                f'{self.provider} returned invalid getplayerinfo response data',
+                invalid_path,
+                invalid_attribute
+            )
 
         return self.parse_getplayerinfo_response_values(key_set, parsed, self.cleaners)
 
@@ -232,7 +244,9 @@ class AspxClient(BaseAspxClient):
         return parsed
 
     @staticmethod
-    def is_valid_getplayerinfo_response_data(key_set: PlayerinfoKeySet, parsed: dict) -> bool:
+    def is_valid_getplayerinfo_response_data(
+            key_set: PlayerinfoKeySet, parsed: dict
+    ) -> Tuple[bool, Optional[str], Optional[Any]]:
         if key_set is PlayerinfoKeySet.GENERAL_STATS:
             return is_valid_dict(parsed, GETPLAYERINFO_GENERAL_STATS_RESPONSE_SCHEMA)
         else:
@@ -276,14 +290,18 @@ class AspxClient(BaseAspxClient):
             ParseTarget('data')
         ])
 
-        valid_data = self.is_valid_getrankinfo_response_data(parsed)
+        valid_data, invalid_path, invalid_attribute = self.is_valid_getrankinfo_response_data(parsed)
         if not valid_data:
-            raise InvalidResponseError(f'{self.provider} returned invalid getrankinfo response data')
+            raise InvalidResponseError(
+                f'{self.provider} returned invalid getrankinfo response data',
+                invalid_path,
+                invalid_attribute
+            )
 
         return self.parse_getrankinfo_response_values(parsed, self.cleaners)
 
     @staticmethod
-    def is_valid_getrankinfo_response_data(parsed: dict) -> bool:
+    def is_valid_getrankinfo_response_data(parsed: dict) -> Tuple[bool, Optional[str], Optional[Any]]:
         return is_valid_dict(parsed, GETRANKINFO_RESPONSE_SCHEMA)
 
     @staticmethod
@@ -314,14 +332,18 @@ class AspxClient(BaseAspxClient):
             ParseTarget('data', as_list=True)
         ])
 
-        valid_data = self.is_valid_getawardsinfo_response_data(parsed)
+        valid_data, invalid_path, invalid_attribute = self.is_valid_getawardsinfo_response_data(parsed)
         if not valid_data:
-            raise InvalidResponseError(f'{self.provider} returned invalid getawardsinfo response data')
+            raise InvalidResponseError(
+                f'{self.provider} returned invalid getawardsinfo response data',
+                invalid_path,
+                invalid_attribute
+            )
 
         return self.parse_getawardsinfo_response_values(parsed, self.cleaners)
 
     @staticmethod
-    def is_valid_getawardsinfo_response_data(parsed: dict) -> bool:
+    def is_valid_getawardsinfo_response_data(parsed: dict) -> Tuple[bool, Optional[str], Optional[Any]]:
         return is_valid_dict(parsed, GETAWARDSINFO_RESPONSE_SCHEMA)
 
     @staticmethod
@@ -353,14 +375,18 @@ class AspxClient(BaseAspxClient):
             ParseTarget('data', as_list=True)
         ])
 
-        valid_data = self.is_valid_getunlocksinfo_response_data(parsed)
+        valid_data, invalid_path, invalid_attribute = self.is_valid_getunlocksinfo_response_data(parsed)
         if not valid_data:
-            raise InvalidResponseError(f'{self.provider} returned invalid getunlocksinfo response data')
+            raise InvalidResponseError(
+                f'{self.provider} returned invalid getunlocksinfo response data',
+                invalid_path,
+                invalid_attribute
+            )
 
         return self.parse_getunlocksinfo_response_values(parsed, self.cleaners)
 
     @staticmethod
-    def is_valid_getunlocksinfo_response_data(parsed: dict) -> bool:
+    def is_valid_getunlocksinfo_response_data(parsed: dict) -> Tuple[bool, Optional[str], Optional[Any]]:
         return is_valid_dict(parsed, GETUNLOCKSINFO_RESPONSE_SCHEMA)
 
     @staticmethod
@@ -386,14 +412,18 @@ class AspxClient(BaseAspxClient):
             ParseTarget('unlocks', as_list=True)
         ])
 
-        valid_data = self.is_valid_getbackendinfo_response_data(parsed)
+        valid_data, invalid_path, invalid_attribute = self.is_valid_getbackendinfo_response_data(parsed)
         if not valid_data:
-            raise InvalidResponseError(f'{self.provider} returned invalid getbackendinfo response data')
+            raise InvalidResponseError(
+                f'{self.provider} returned invalid getbackendinfo response data',
+                invalid_path,
+                invalid_attribute
+            )
 
         return self.parse_getbackendinfo_response_values(parsed, self.cleaners)
 
     @staticmethod
-    def is_valid_getbackendinfo_response_data(parsed: dict) -> bool:
+    def is_valid_getbackendinfo_response_data(parsed: dict) -> Tuple[bool, Optional[str], Optional[Any]]:
         return is_valid_dict(parsed, GETBACKENDINFO_RESPONSE_SCHEMA)
 
     @staticmethod

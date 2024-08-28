@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, Union, List, Any
+from typing import Dict, Union, List, Any, Tuple, Optional
 from unittest import TestCase
 
 from aspxstats.validation import is_valid_dict
@@ -13,7 +13,7 @@ class ValidationTest(TestCase):
             name: str
             data: Dict[str, Any]
             schema: Dict[str, Union[AttributeSchema, dict]]
-            wantIsValid: bool
+            expected: Tuple[bool, Optional[str], Optional[Any]]
 
         # GIVEN
         tests: List[ValidationTestCase] = [
@@ -77,7 +77,7 @@ class ValidationTest(TestCase):
                         },
                     })
                 },
-                wantIsValid=True
+                expected=(True, None, None)
             ),
             ValidationTestCase(
                 name='true for data matching schema with additional attributes',
@@ -88,7 +88,7 @@ class ValidationTest(TestCase):
                 schema={
                     'str': AttributeSchema(type=str),
                 },
-                wantIsValid=True
+                expected=(True, None, None)
             ),
             ValidationTestCase(
                 name='true for negative numeric-string',
@@ -98,7 +98,7 @@ class ValidationTest(TestCase):
                 schema={
                     'numeric-str': AttributeSchema(type=str, is_numeric=True)
                 },
-                wantIsValid=True
+                expected=(True, None, None)
             ),
             ValidationTestCase(
                 name='true for true-ish booly-string',
@@ -108,7 +108,7 @@ class ValidationTest(TestCase):
                 schema={
                     'booly-str': AttributeSchema(type=str, is_booly=True)
                 },
-                wantIsValid=True
+                expected=(True, None, None)
             ),
             ValidationTestCase(
                 name='true for false-ish booly-string',
@@ -118,7 +118,7 @@ class ValidationTest(TestCase):
                 schema={
                     'booly-str': AttributeSchema(type=str, is_booly=True)
                 },
-                wantIsValid=True
+                expected=(True, None, None)
             ),
             ValidationTestCase(
                 name='true for negative floaty-string',
@@ -128,7 +128,7 @@ class ValidationTest(TestCase):
                 schema={
                     'numeric-str': AttributeSchema(type=str, is_floaty=True)
                 },
-                wantIsValid=True
+                expected=(True, None, None)
             ),
             ValidationTestCase(
                 name='true for zero value ratio-string string attribute',
@@ -138,7 +138,7 @@ class ValidationTest(TestCase):
                 schema={
                     'ratio-str': AttributeSchema(type=str, is_ratio=True),
                 },
-                wantIsValid=True
+                expected=(True, None, None)
             ),
             ValidationTestCase(
                 name='false for non-string string attribute',
@@ -148,7 +148,7 @@ class ValidationTest(TestCase):
                 schema={
                     'str': AttributeSchema(type=str),
                 },
-                wantIsValid=False
+                expected=(False, 'str', 123456)
             ),
             ValidationTestCase(
                 name='false for non-numeric-string string attribute',
@@ -158,7 +158,7 @@ class ValidationTest(TestCase):
                 schema={
                     'numeric-str': AttributeSchema(type=str, is_numeric=True),
                 },
-                wantIsValid=False
+                expected=(False, 'numeric-str', 'not-a-numeric-string')
             ),
             ValidationTestCase(
                 name='false for non-numeric non-booly-string string attribute',
@@ -168,7 +168,7 @@ class ValidationTest(TestCase):
                 schema={
                     'booly-str': AttributeSchema(type=str, is_booly=True),
                 },
-                wantIsValid=False
+                expected=(False, 'booly-str', 'not-a-numeric-string')
             ),
             ValidationTestCase(
                 name='false for negative non-booly-string string attribute',
@@ -178,7 +178,7 @@ class ValidationTest(TestCase):
                 schema={
                     'booly-str': AttributeSchema(type=str, is_booly=True),
                 },
-                wantIsValid=False
+                expected=(False, 'booly-str', '-1')
             ),
             ValidationTestCase(
                 name='false for positive non-booly-string string attribute',
@@ -188,7 +188,7 @@ class ValidationTest(TestCase):
                 schema={
                     'booly-str': AttributeSchema(type=str, is_booly=True),
                 },
-                wantIsValid=False
+                expected=(False, 'booly-str', '2')
             ),
             ValidationTestCase(
                 name='false for non-floaty-string string attribute',
@@ -198,7 +198,7 @@ class ValidationTest(TestCase):
                 schema={
                     'floaty-str': AttributeSchema(type=str, is_floaty=True),
                 },
-                wantIsValid=False
+                expected=(False, 'floaty-str', 'not-a-floaty-string')
             ),
             ValidationTestCase(
                 name='false for non-ratio-string string attribute',
@@ -208,7 +208,7 @@ class ValidationTest(TestCase):
                 schema={
                     'ratio-str': AttributeSchema(type=str, is_ratio=True),
                 },
-                wantIsValid=False
+                expected=(False, 'ratio-str', 'not-a-ratio-string')
             ),
             ValidationTestCase(
                 name='false for missing attribute',
@@ -218,7 +218,7 @@ class ValidationTest(TestCase):
                 schema={
                     'str': AttributeSchema(type=str),
                 },
-                wantIsValid=False
+                expected=(False, 'str', None)
             ),
             ValidationTestCase(
                 name='false for non-string string attribute in sub-dict attribute',
@@ -232,7 +232,7 @@ class ValidationTest(TestCase):
                         'sub-dict-str': AttributeSchema(type=str),
                     },
                 },
-                wantIsValid=False
+                expected=(False, 'sub-dict.sub-dict-str', 123456)
             ),
             ValidationTestCase(
                 name='false for non-numeric-string string attribute in sub-dict attribute',
@@ -246,7 +246,7 @@ class ValidationTest(TestCase):
                         'sub-dict-numeric-str': AttributeSchema(type=str, is_numeric=True),
                     },
                 },
-                wantIsValid=False
+                expected=(False, 'sub-dict.sub-dict-numeric-str', 'not-a-numeric-string')
             ),
             ValidationTestCase(
                 name='false for non-floaty-string string attribute in sub-dict attribute',
@@ -260,13 +260,13 @@ class ValidationTest(TestCase):
                         'sub-dict-floaty-str': AttributeSchema(type=str, is_floaty=True),
                     },
                 },
-                wantIsValid=False
+                expected=(False, 'sub-dict.sub-dict-floaty-str', 'not-a-floaty-string')
             ),
             ValidationTestCase(
                 name='false for non-ratio-string string attribute in sub-dict attribute',
                 data={
                     'sub-dict': {
-                        'sub-dict-ratioo-str': 'not-a-ratio-string',
+                        'sub-dict-ratio-str': 'not-a-ratio-string',
                     },
                 },
                 schema={
@@ -274,7 +274,7 @@ class ValidationTest(TestCase):
                         'sub-dict-ratio-str': AttributeSchema(type=str, is_ratio=True),
                     },
                 },
-                wantIsValid=False
+                expected=(False, 'sub-dict.sub-dict-ratio-str', 'not-a-ratio-string')
             ),
             ValidationTestCase(
                 name='false for missing attribute in sub-dict attribute',
@@ -288,7 +288,7 @@ class ValidationTest(TestCase):
                         'sub-dict-str': AttributeSchema(type=str),
                     },
                 },
-                wantIsValid=False
+                expected=(False, 'sub-dict.sub-dict-str', None)
             ),
             ValidationTestCase(
                 name='false for non-dict sub-dict attribute',
@@ -300,7 +300,7 @@ class ValidationTest(TestCase):
                         'sub-dict-str': AttributeSchema(type=str),
                     },
                 },
-                wantIsValid=False
+                expected=(False, 'sub-dict', 'not-a-dict')
             ),
             ValidationTestCase(
                 name='false for non-string child attribute in list attribute',
@@ -316,7 +316,7 @@ class ValidationTest(TestCase):
                         'str': AttributeSchema(type=str),
                     })
                 },
-                wantIsValid=False
+                expected=(False, 'list-of-dicts.0.str', 123456)
             ),
             ValidationTestCase(
                 name='false for non-numeric-string child attribute in list attribute',
@@ -332,7 +332,7 @@ class ValidationTest(TestCase):
                         'numeric-str': AttributeSchema(type=str, is_numeric=True),
                     })
                 },
-                wantIsValid=False
+                expected=(False, 'list-of-dicts.0.numeric-str', 'not-a-numeric-string')
             ),
             ValidationTestCase(
                 name='false for non-floaty-string child attribute in list attribute',
@@ -348,7 +348,7 @@ class ValidationTest(TestCase):
                         'floaty-str': AttributeSchema(type=str, is_floaty=True),
                     })
                 },
-                wantIsValid=False
+                expected=(False, 'list-of-dicts.0.floaty-str', 'not-a-floaty-string')
             ),
             ValidationTestCase(
                 name='false for non-ratio-string child attribute in list attribute',
@@ -364,7 +364,7 @@ class ValidationTest(TestCase):
                         'ratio-str': AttributeSchema(type=str, is_floaty=True),
                     })
                 },
-                wantIsValid=False
+                expected=(False, 'list-of-dicts.0.ratio-str', 'not-a-ratio-string')
             ),
             ValidationTestCase(
                 name='false for missing child attribute in list attribute',
@@ -380,7 +380,7 @@ class ValidationTest(TestCase):
                         'str': AttributeSchema(type=str),
                     })
                 },
-                wantIsValid=False
+                expected=(False, 'list-of-dicts.0.str', None)
             ),
             ValidationTestCase(
                 name='false for non-dict child in list attribute',
@@ -394,10 +394,10 @@ class ValidationTest(TestCase):
                         'str': AttributeSchema(type=str),
                     })
                 },
-                wantIsValid=False
+                expected=(False, 'list-of-dicts.0', 'not-a-dict')
             ),
             ValidationTestCase(
-                name='false non-list list attribute',
+                name='false for non-list list attribute',
                 data={
                     'list-of-dicts': 'not-a-list',
                 },
@@ -406,13 +406,13 @@ class ValidationTest(TestCase):
                         'str': AttributeSchema(type=str),
                     })
                 },
-                wantIsValid=False
+                expected=(False, 'list-of-dicts', 'not-a-list')
             ),
         ]
 
         for t in tests:
             # WHEN
-            valid = is_valid_dict(t.data, t.schema)
+            actual = is_valid_dict(t.data, t.schema)
 
             # THEN
-            self.assertEqual(t.wantIsValid, valid, f'"{t.name}" failed\nexpected: {t.wantIsValid}\nactual: {valid}')
+            self.assertEqual(t.expected, actual, f'"{t.name}" failed\nexpected: {t.expected}\nactual: {actual}')
