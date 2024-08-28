@@ -19,7 +19,7 @@ def parse_dict_values(
     :param cleaners: dict of cleaner functions used to clean the values before parsing
     :return: dict containing correctly types values
     """
-    parsed = {}
+    parsed = dict()
     for key, value_schema in schema.items():
         parsed[key] = parse_dict_value(data[key], value_schema, cleaners)
 

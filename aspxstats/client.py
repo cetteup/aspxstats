@@ -176,7 +176,7 @@ class AspxClient:
     @staticmethod
     def extract_datasets_from_response(raw_data: str) -> List[Dataset]:
         lines = raw_data.split('\n')
-        datasets: List[Dataset] = []
+        datasets: List[Dataset] = list()
         # We should see a header line first (since we skip the "status" line)
         current_line_type: LineType = LineType.HEADERS
         data_line_index = 0
@@ -211,7 +211,7 @@ class AspxClient:
 
     @staticmethod
     def build_dict_from_datasets(datasets: List[Dataset], targets: List[ParseTarget]) -> dict:
-        data = {}
+        data = dict()
         for index, dataset in enumerate(datasets):
             target = targets[index] if index < len(targets) else None
             if target is None:

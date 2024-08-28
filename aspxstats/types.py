@@ -29,7 +29,7 @@ class Dataset:
 
     def __init__(self, keys: str):
         self.keys = keys
-        self.data = []
+        self.data = list()
 
 
 class ParseTarget:

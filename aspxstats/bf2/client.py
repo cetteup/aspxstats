@@ -456,7 +456,7 @@ class AspxClient(BaseAspxClient):
 
     @staticmethod
     def get_cleaners(clean_nicks: bool = False) -> Optional[Dict[CleanerType, Callable[[str], str]]]:
-        cleaners: Dict[CleanerType, Callable[[str], str]] = {}
+        cleaners: Dict[CleanerType, Callable[[str], str]] = dict()
         if clean_nicks:
             cleaners[CleanerType.NICK] = clean_nick
 

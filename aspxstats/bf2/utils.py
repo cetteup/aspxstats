@@ -14,7 +14,7 @@ def group_stats_by_item(
     :return: list containing a dict with stats for each item
     """
     # Group into dict first, since some entities don't have consecutive ids (e.g. maps use ...,6, 10, 11, 12, 100,...)
-    grouped = {}
+    grouped = dict()
     for source_key, value in data.items():
         if not source_key.startswith(prefix):
             continue
