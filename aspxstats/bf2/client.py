@@ -198,7 +198,7 @@ class AspxClient(BaseAspxClient):
             ParseTarget('data')
         ])
 
-        parsed = self.fix_getplayerinfo_zero_values(parsed)
+        parsed = self.fix_getplayerinfo_values(parsed)
 
         valid_data, invalid_path, invalid_attribute = self.is_valid_getplayerinfo_response_data(key_set, parsed)
         if not valid_data:
@@ -211,7 +211,7 @@ class AspxClient(BaseAspxClient):
         return self.parse_getplayerinfo_response_values(key_set, parsed, self.cleaners)
 
     @staticmethod
-    def fix_getplayerinfo_zero_values(parsed: dict) -> dict:
+    def fix_getplayerinfo_values(parsed: dict) -> dict:
         # Can't fix any player attributes if the key is missing/of wrong type
         if not isinstance(parsed.get('data'), dict):
             return parsed
@@ -235,11 +235,20 @@ class AspxClient(BaseAspxClient):
             'ktm-', 'kkl-', 'kdt-',  # kit stats prefixes
             'mtm-', 'mwn-', 'mls-'  # map stats prefixes
         }
+        """
+        PlayBF2 often returns favorite kit/map/vehicle/weapon values with a "time" prefix
+        e.g. fveh as "time1" (pid 92163112 asof 1725108062)
+        """
+        favorites = {'fkit', 'fmap', 'fveh', 'fwea'}
         for key, value in parsed['data'].items():
             matches_key = key in keys
             matches_prefix = key[:4] in prefixes
             if (matches_key or matches_prefix) and not is_numeric(value):
                 parsed['data'][key] = '0'
+
+            matches_favorite = key in favorites
+            if matches_favorite and isinstance(value, str) and value.startswith('time'):
+                parsed['data'][key] = value[4:]
 
         return parsed
 

@@ -645,7 +645,7 @@ class AspxClientTest(unittest.TestCase):
                 # THEN
                 self.assertEqual(actual, (False, f'data.{key}', 'not-a-numeric-string'), f'"{key}" with non-numeric-string value failed')
 
-    def test_fix_getplayerinfo_zero_values(self):
+    def test_fix_getplayerinfo_values(self):
         @dataclass
         class FixGetplayerinfoTestCase:
             name: str
@@ -680,6 +680,25 @@ class AspxClientTest(unittest.TestCase):
                 }
             ),
             FixGetplayerinfoTestCase(
+                name='removes prefix for invalid favorites values',
+                parsed={
+                    'data': {
+                        'fkit': 'time1',
+                        'fmap': 'time2',
+                        'fveh': 'time3',
+                        'fwea': 'time4',
+                    }
+                },
+                expected={
+                    'data': {
+                        'fkit': '1',
+                        'fmap': '2',
+                        'fveh': '3',
+                        'fwea': '4',
+                    }
+                }
+            ),
+            FixGetplayerinfoTestCase(
                 name='does not overwrite valid existing values',
                 parsed={
                     'data': {
@@ -689,7 +708,11 @@ class AspxClientTest(unittest.TestCase):
                         'vmrs': '4000',
                         'mtm-0': '5000',
                         'mwn-0': '6000',
-                        'mls-0': '7000'
+                        'mls-0': '7000',
+                        'fkit': '1',
+                        'fmap': '2',
+                        'fveh': '3',
+                        'fwea': '4',
                     }
                 },
                 expected={
@@ -700,7 +723,11 @@ class AspxClientTest(unittest.TestCase):
                         'vmrs': '4000',
                         'mtm-0': '5000',
                         'mwn-0': '6000',
-                        'mls-0': '7000'
+                        'mls-0': '7000',
+                        'fkit': '1',
+                        'fmap': '2',
+                        'fveh': '3',
+                        'fwea': '4',
                     }
                 }
             ),
@@ -772,7 +799,7 @@ class AspxClientTest(unittest.TestCase):
 
         for t in tests:
             # WHEN
-            actual = AspxClient.fix_getplayerinfo_zero_values(t.parsed)
+            actual = AspxClient.fix_getplayerinfo_values(t.parsed)
 
             # THEN
             self.assertDictEqual(t.expected, actual)
