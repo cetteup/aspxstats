@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Dict, Optional, Union, Callable, Tuple, Any
 
 from .schemas import GETLEADERBOARD_RESPONSE_SCHEMA, SEARCHFORPLAYERS_RESPONSE_SCHEMA, \
@@ -7,7 +8,7 @@ from .types import StatsProvider, SearchMatchType, SearchSortOrder, PlayerSearch
     ScoreLeaderboardId, WeaponType, VehicleType, \
     KitType, LeaderboardResponse, PlayerinfoKeySet, PlayerinfoResponse, \
     PlayerinfoGeneralStats, PlayerinfoMapStats, RankinfoResponse
-from .utils import clean_nick
+from .utils import clean_nick, build_aspx_response
 from ..client import AspxClient as BaseAspxClient
 from ..exceptions import InvalidParameterError, InvalidResponseError, NotFoundError
 from ..parsing import parse_dict_values
@@ -327,14 +328,26 @@ class AspxClient(BaseAspxClient):
         raw_data = self.get_aspx_data('getawardsinfo.aspx', {
             'pid': str(pid)
         })
-        return self.validate_and_parse_getawardsinfo_response(raw_data)
+        return self.validate_and_parse_getawardsinfo_response(raw_data, pid)
 
-    def validate_and_parse_getawardsinfo_response(self, raw_data: str) -> dict:
+    def validate_and_parse_getawardsinfo_response(self, raw_data: str, pid: int) -> dict:
         valid_response, not_found = self.is_valid_aspx_response(raw_data, self.response_validation_mode)
         if not valid_response and not_found:
             raise NotFoundError(f'No such player on {self.provider}')
         elif not valid_response:
             raise InvalidResponseError(f'{self.provider} returned an invalid getawardsinfo response')
+
+        """
+        BF2Hub returns invalid/broken responses for accounts which were created/backed up but never used.
+        Instead of raising an error for these >250k accounts, just overwrite with an empty response "asof" now.
+        """
+        if self.provider is StatsProvider.BF2HUB and raw_data == 'O\n$\t1\t$':
+            raw_data = build_aspx_response([
+                ['O'],
+                ['H', 'pid', 'asof'],
+                ['D', str(pid), str(int(datetime.now().timestamp()))],
+                ['H', 'award', 'level',	'when', 'first']
+            ])
 
         parsed = self.parse_aspx_response(raw_data, [
             ParseTarget(to_root=True),

@@ -136,7 +136,7 @@ class AsyncAspxClient(AspxClient, AsyncBaseAspxClient):
         raw_data = await self.get_aspx_data('getawardsinfo.aspx', {
             'pid': str(pid)
         })
-        return self.validate_and_parse_getawardsinfo_response(raw_data)
+        return self.validate_and_parse_getawardsinfo_response(raw_data, pid)
 
     async def getunlocksinfo_dict(
             self,

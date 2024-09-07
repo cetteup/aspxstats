@@ -38,3 +38,22 @@ def group_stats_by_item(
 def clean_nick(nick: str) -> str:
     return nick.split(' ').pop()
 
+
+def build_aspx_response(lines: List[List[str]]) -> str:
+    data = ''
+    length = 0
+    for li, line in enumerate(lines):
+        for ei, element in enumerate(line):
+            data += element
+            length += len(element)
+            # Add separator after all but last element
+            if ei < len(line) - 1:
+                data += '\t'
+
+        # Add line break after all but last line
+        if li < len(lines) - 1:
+            data += '\n'
+
+    # Append length indicator line
+    return data + '\n$\t' + str(length) + '\t$'
+

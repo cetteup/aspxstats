@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import List, Dict, Union
 from unittest import TestCase
 
-from aspxstats.bf2.utils import group_stats_by_item
+from aspxstats.bf2.utils import group_stats_by_item, build_aspx_response
 
 
 class UtilsTest(TestCase):
@@ -243,3 +243,27 @@ class UtilsTest(TestCase):
 
             # THEN
             self.assertListEqual(t.expected, grouped)
+
+    def test_build_aspx_response(self):
+        # GIVEN
+        lines = [
+            ['O'],
+            ['H', 'pid', 'asof'],
+            ['D', '500362798', '1715286981'],
+            ['H', 'award', 'level', 'when', 'first'],
+            ['D', '1031105', '1', '1601663082', '0']
+        ]
+
+        # WHEN
+        response = build_aspx_response(lines)
+
+        # THEN
+        expected = (
+            "O\n"
+            "H\tpid\tasof\n"
+            "D\t500362798\t1715286981\n"
+            "H\taward\tlevel\twhen\tfirst\n"
+            "D\t1031105\t1\t1601663082\t0\n"
+            "$\t69\t$"
+        )
+        self.assertEqual(expected, response)
