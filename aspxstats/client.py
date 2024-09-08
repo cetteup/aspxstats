@@ -91,9 +91,10 @@ class AspxClient:
         actual_length = AspxClient.determine_actual_response_length(lines)
         indicated_length = AspxClient.get_indicated_response_length(last_line)
 
-        response_valid = (first_line.strip() == 'O' and
-                          (actual_length == indicated_length or validation_mode is ResponseValidationMode.LAX)
-                          and AspxClient.are_response_datasets_valid(raw_data))
+        response_valid = (
+                first_line.strip() == 'O' and
+                (actual_length == indicated_length or validation_mode is ResponseValidationMode.LAX)
+        )
 
         """
         Each project handles player not found errors a little different
@@ -135,21 +136,6 @@ class AspxClient:
             return -1
 
     @staticmethod
-    def are_response_datasets_valid(raw_data: str) -> bool:
-        datasets = AspxClient.extract_datasets_from_response(raw_data)
-        return all(AspxClient.is_valid_dataset(dataset) for dataset in datasets)
-
-    @staticmethod
-    def is_valid_dataset(dataset: Dataset) -> bool:
-        """
-        Ensure that all value lines of a dataset have the same number of columns as the key line
-        :param dataset: dataset to test
-        :return: True, if column numbers match, else False
-        """
-        key_columns = dataset.keys.count('\t')
-        return all(value_line.count('\t') == key_columns for value_line in dataset.data)
-
-    @staticmethod
     def parse_aspx_response(raw_data: str, targets: List[ParseTarget]) -> dict:
         """
         Parse raw aspx data into a dictionary
@@ -169,7 +155,9 @@ class AspxClient:
         => raise an error if we have fewer dataset than targets to parse to
         """
         if len(datasets) < len(targets):
-            raise InvalidResponseError('Received invalid number of datasets from list endpoint')
+            raise InvalidResponseError(
+                f'Received unexpected number of datasets (expected {len(targets)}, got {len(datasets)})'
+            )
 
         return AspxClient.build_dict_from_datasets(datasets, targets)
 
@@ -178,32 +166,32 @@ class AspxClient:
         lines = raw_data.split('\n')
         datasets: List[Dataset] = list()
         # We should see a header line first (since we skip the "status" line)
-        current_line_type: LineType = LineType.HEADERS
+        last_line_type: LineType = LineType.HEADERS
         data_line_index = 0
         for line in lines[1:]:
             if line[:2] == 'H\t':
                 # Line starts with header marker => create and append new dataset
-                current_line_type = LineType.HEADERS
+                last_line_type = LineType.HEADERS
                 datasets.append(Dataset(line[2:]))
             elif line[:2] == 'D\t':
                 # Line starts with data marker => add data line to current dataset
-                if current_line_type is LineType.DATA:
+                if last_line_type is LineType.DATA:
                     # Data row is followed by another data row
                     # => increase data line index to add another data line to current dataset
                     # (relevant for player search results for example)
                     data_line_index += 1
 
-                current_line_type = LineType.DATA
+                last_line_type = LineType.DATA
                 datasets[-1].data.append(line[2:])
             elif line[:2] == '$\t':
                 # Line starts with end marker => and stop parsing
                 break
-            elif current_line_type is LineType.HEADERS:
+            elif last_line_type is LineType.HEADERS:
                 # Line has no marker and last marker indicated a header line
                 # => append line to header of current dataset
                 datasets[-1].keys += line
             else:
-                # Line has no marker and last marker indicated a header line
+                # Line has no marker and last marker indicated a data line
                 # => append line to data of current dataset
                 datasets[-1].data[data_line_index] += line
 
@@ -222,7 +210,15 @@ class AspxClient:
             # Split keys/headers into list
             keys = dataset.keys.split('\t')
             # Split each data line into a list
-            data_lines = [line.split('\t') for line in dataset.data]
+            data_lines = []
+            for line in dataset.data:
+                values = line.split('\t')
+                if len(values) != len(keys):
+                    raise InvalidResponseError(
+                        f'Data line does not contain expected number of elements '
+                        f'(expected {len(keys)}, got {len(values)})'
+                    )
+                data_lines.append(values)
 
             if target.to_root:
                 # Add dataset to dict root
@@ -231,7 +227,7 @@ class AspxClient:
                 # Only a single line of data, add as properties under key (child object)
                 # exception: player search returning only a single player (in that case, force return an array)
                 data[target.to_key] = {
-                    key: data_lines[0][index] if index < len(data_lines[0]) else ''
+                    key: data_lines[0][index]
                     for (index, key) in enumerate(keys)
                 }
             elif target.as_list:
