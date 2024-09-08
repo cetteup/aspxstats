@@ -883,7 +883,7 @@ class AspxClientTest(TestCase):
             ParseTarget(to_root=True),
         ])
 
-    def test_parse_aspx_data_no_error_mismatched_column_number(self):
+    def test_parse_aspx_data_error_mismatched_column_number(self):
         # GIVEN raw data with a dataset containing a row with a column missing
         raw_data = 'O\n' \
                    'H\tasof\n' \
@@ -896,20 +896,7 @@ class AspxClientTest(TestCase):
         self.assertFalse(valid)
 
         # WHEN
-        parsed = AspxClient.parse_aspx_response(raw_data, [
+        self.assertRaises(InvalidResponseError, AspxClient.parse_aspx_response, raw_data, [
             ParseTarget(to_root=True),
             ParseTarget('player')
         ])
-
-        # THEN
-        expected = {
-            'asof': '1663441990',
-            'player': {
-                'pid': '500362798',
-                'nick': 'mister249',
-                'mtm-0': '123',
-                'mwn-0': '456',
-                'mls-0': ''
-            }
-        }
-        self.assertDictEqual(expected, parsed)
