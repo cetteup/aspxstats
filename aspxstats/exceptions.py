@@ -14,20 +14,22 @@ class TimeoutError(Error):
 
 
 class InvalidResponseError(Error):
-    path: Optional[str]
-    attribute: Optional[Any]
+    pass
 
-    def __init__(self, message: str, path: Optional[str] = None, attribute: Optional[Any] = None):
-        super().__init__(message)
+
+class ValidationError(Error):
+    path: str
+    value: Optional[Any]
+
+    def __init__(self, path: str, attribute: Optional[Any] = None):
         self.path = path
-        self.attribute = attribute
+        self.value = attribute
 
     def __str__(self) -> str:
-        if self.path is not None and self.attribute is not None:
-            return f'{super().__str__()}: {self.path}={self.attribute}'
+        if self.value is not None:
+            return 'Received response contains invalid attribute value: ' + '='.join([self.path, str(self.value)])
 
-        return super().__str__()
-
+        return 'Received response is missing attribute: ' + self.path
 
 class NotFoundError(Error):
     pass

@@ -28,27 +28,27 @@ def parse_dict_values(
 
 def parse_dict_value(
         value: Union[str, dict, list],
-        schema: Dict[str, Union[dict, AttributeSchema]],
+        schema: Union[AttributeSchema, Dict[str, AttributeSchema]],
         cleaners: Optional[Dict[CleanerType, Callable[[str], str]]] = None
 ) -> Union[str, int, float, Dict[str, Union[str, int, float]], List[Dict[str, Union[str, int, float]]]]:
-    if isinstance(schema, AttributeSchema):
-        if schema.is_numeric:
-            return int(value)
-        if schema.is_booly:
-            return int(value) == 1
-        if schema.is_floaty:
-            return float(value)
-        if schema.is_ratio:
-            if value == '0':
-                return 0.0
-            dividend, divisor = [int(e) for e in value.split(':', 1)]
-            # Cast dividend to float to return a consistent type in both cases
-            return round(dividend / divisor, 2) if divisor > 0 else float(dividend)
-        if schema.is_nick and cleaners is not None and callable(cleaners.get(CleanerType.NICK)):
-            return cleaners[CleanerType.NICK](value)
-        if schema.type == list:
-            return [parse_dict_values(child, schema.children, cleaners) for child in value]
-        else:
-            return value
-    else:
+    if not isinstance(schema, AttributeSchema):
         return parse_dict_values(value, schema, cleaners)
+
+    if schema.is_numeric:
+        return int(value)
+    if schema.is_booly:
+        return int(value) == 1
+    if schema.is_floaty:
+        return float(value)
+    if schema.is_ratio:
+        if value == '0':
+            return 0.0
+        dividend, divisor = [int(e) for e in value.split(':', 1)]
+        # Cast dividend to float to return a consistent type in both cases
+        return round(dividend / divisor, 2) if divisor > 0 else float(dividend)
+    if schema.is_nick and cleaners is not None and callable(cleaners.get(CleanerType.NICK)):
+        return cleaners[CleanerType.NICK](value)
+    if schema.type == list:
+        return [parse_dict_values(child, schema.children, cleaners) for child in value]
+    else:
+        return value

@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from typing import Dict, Any, Union, List, Optional, Callable
 from unittest import TestCase
 
-from aspxstats.bf2.utils import clean_nick
 from aspxstats.parsing import parse_dict_values
 from aspxstats.schema import AttributeSchema
 from aspxstats.types import CleanerType

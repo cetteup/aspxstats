@@ -1,6 +1,16 @@
 from typing import Dict, Union, Tuple, Optional, Any
 
+from .exceptions import ValidationError
 from .schema import AttributeSchema
+
+
+def validate_dict(
+        data: dict,
+        schema: Dict[str, Union[dict, AttributeSchema]]
+) -> None:
+    valid, path, value = is_valid_dict(data, schema)
+    if not valid:
+        raise ValidationError(path, value)
 
 
 def is_valid_dict(
@@ -9,9 +19,9 @@ def is_valid_dict(
         root: str = ''
 ) -> Tuple[bool, Optional[str], Optional[Any]]:
     for key, attribute_schema in schema.items():
-        valid, path, attribute = is_valid_attribute(join(root, key), data.get(key), attribute_schema)
+        valid, path, value = is_valid_attribute(join(root, key), data.get(key), attribute_schema)
         if not valid:
-            return False, path, attribute
+            return False, path, value
     return True, None, None
 
 
