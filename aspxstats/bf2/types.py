@@ -62,6 +62,7 @@ class PlayerSearchResponse:
 
 class LeaderboardType(str, Enum):
     SCORE = 'score'
+    RISING_STAR = 'risingstar'
     WEAPON = 'weapon'
     VEHICLE = 'vehicle'
     KIT = 'kit'
@@ -70,7 +71,6 @@ class LeaderboardType(str, Enum):
 class ScoreLeaderboardId(str, Enum):
     # Score leaderboards use names as ids
     OVERALL = 'overall'
-    RISING_STAR = 'risingstar'
     COMMANDER = 'commander'
     TEAM = 'team'
     COMBAT = 'combat'

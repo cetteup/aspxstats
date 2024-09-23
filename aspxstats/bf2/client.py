@@ -82,12 +82,12 @@ class AspxClient(BaseAspxClient):
     def getleaderboard(
             self,
             leaderboard_type: LeaderboardType = LeaderboardType.SCORE,
-            leaderboard_id: Union[
+            leaderboard_id: Optional[Union[
                 ScoreLeaderboardId,
                 WeaponType,
                 VehicleType,
                 KitType
-            ] = ScoreLeaderboardId.OVERALL,
+            ]] = ScoreLeaderboardId.OVERALL,
             pos: int = 1,
             before: int = 0,
             after: int = 19,
@@ -99,12 +99,12 @@ class AspxClient(BaseAspxClient):
     def getleaderboard_dict(
             self,
             leaderboard_type: LeaderboardType = LeaderboardType.SCORE,
-            leaderboard_id: Union[
+            leaderboard_id: Optional[Union[
                 ScoreLeaderboardId,
                 WeaponType,
                 VehicleType,
                 KitType
-            ] = ScoreLeaderboardId.OVERALL,
+            ]] = ScoreLeaderboardId.OVERALL,
             pos: int = 1,
             before: int = 0,
             after: int = 19,
@@ -113,7 +113,7 @@ class AspxClient(BaseAspxClient):
         # TODO Validate type and id combinations
         raw_data = self.get_aspx_data('getleaderboard.aspx', {
             'type': leaderboard_type,
-            'id': str(leaderboard_id.value),
+            'id': leaderboard_id,
             'pos': str(pos),
             'before': str(before),
             'after': str(after),
@@ -334,6 +334,7 @@ class AspxClient(BaseAspxClient):
 
         return self.parse_getawardsinfo_response_values(parsed, self.cleaners)
 
+    # TODO add tests
     @staticmethod
     def validate_getawardsinfo_response_data(parsed: dict) -> None:
         validate_dict(parsed, GETAWARDSINFO_RESPONSE_SCHEMA)
@@ -371,6 +372,7 @@ class AspxClient(BaseAspxClient):
 
         return self.parse_getunlocksinfo_response_values(parsed, self.cleaners)
 
+    # TODO Add tests
     @staticmethod
     def validate_getunlocksinfo_response_data(parsed: dict) -> None:
         validate_dict(parsed, GETUNLOCKSINFO_RESPONSE_SCHEMA)
@@ -402,6 +404,7 @@ class AspxClient(BaseAspxClient):
 
         return self.parse_getbackendinfo_response_values(parsed, self.cleaners)
 
+    # TODO Add tests
     @staticmethod
     def validate_getbackendinfo_response_data(parsed: dict) -> None:
         validate_dict(parsed, GETBACKENDINFO_RESPONSE_SCHEMA)

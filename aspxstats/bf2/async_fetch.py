@@ -35,12 +35,12 @@ async def async_searchforplayers_dict(
 
 async def async_getleaderboard(
         leaderboard_type: LeaderboardType = LeaderboardType.SCORE,
-        leaderboard_id: Union[
+        leaderboard_id: Optional[Union[
             ScoreLeaderboardId,
             WeaponType,
             VehicleType,
             KitType
-        ] = ScoreLeaderboardId.OVERALL,
+        ]] = ScoreLeaderboardId.OVERALL,
         pos: int = 1,
         before: int = 0,
         after: int = 19,
@@ -56,12 +56,12 @@ async def async_getleaderboard(
 
 async def async_getleaderboard_dict(
         leaderboard_type: LeaderboardType = LeaderboardType.SCORE,
-        leaderboard_id: Union[
+        leaderboard_id: Optional[Union[
             ScoreLeaderboardId,
             WeaponType,
             VehicleType,
             KitType
-        ] = ScoreLeaderboardId.OVERALL,
+        ]] = ScoreLeaderboardId.OVERALL,
         pos: int = 1,
         before: int = 0,
         after: int = 19,

@@ -144,16 +144,6 @@ class AspxClient:
         :return: aspx data as dictionary (structure varies based on endpoint/targets parameter)
         """
         datasets = AspxClient.extract_datasets_from_response(raw_data)
-
-        """
-        For most endpoints we get two datasets: one containing metadata and one containing results.
-        A common breach of this design: PlayBF2 does not support the rising star leaderboard. If you request it anyway,
-        you get a single, empty dataset (which we cannot sensibly parse into the usual leaderboard response format):
-        O
-        H    size    asof
-        $    10    $
-        => raise an error if we have fewer dataset than targets to parse to
-        """
         if len(datasets) < len(targets):
             raise InvalidResponseError(
                 f'Received unexpected number of datasets (expected {len(targets)}, got {len(datasets)})'

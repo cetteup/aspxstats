@@ -46,12 +46,12 @@ class AsyncAspxClient(AspxClient, AsyncBaseAspxClient):
     async def getleaderboard(
             self,
             leaderboard_type: LeaderboardType = LeaderboardType.SCORE,
-            leaderboard_id: Union[
+            leaderboard_id: Optional[Union[
                 ScoreLeaderboardId,
                 WeaponType,
                 VehicleType,
                 KitType
-            ] = ScoreLeaderboardId.OVERALL,
+            ]] = ScoreLeaderboardId.OVERALL,
             pos: int = 1,
             before: int = 0,
             after: int = 19,
@@ -63,12 +63,12 @@ class AsyncAspxClient(AspxClient, AsyncBaseAspxClient):
     async def getleaderboard_dict(
             self,
             leaderboard_type: LeaderboardType = LeaderboardType.SCORE,
-            leaderboard_id: Union[
+            leaderboard_id: Optional[Union[
                 ScoreLeaderboardId,
                 WeaponType,
                 VehicleType,
                 KitType
-            ] = ScoreLeaderboardId.OVERALL,
+            ]] = ScoreLeaderboardId.OVERALL,
             pos: int = 1,
             before: int = 0,
             after: int = 19,
@@ -77,7 +77,7 @@ class AsyncAspxClient(AspxClient, AsyncBaseAspxClient):
         # TODO Validate type and id combinations
         raw_data = await self.get_aspx_data('getleaderboard.aspx', {
             'type': leaderboard_type,
-            'id': str(leaderboard_id.value),
+            'id': leaderboard_id,
             'pos': str(pos),
             'before': str(before),
             'after': str(after),
