@@ -428,6 +428,9 @@ class AspxClient(BaseAspxClient):
             ),
             StatsProvider.PLAYBF2: ProviderConfig(
                 base_uri='http://bf2web.playbf2.ru/ASP/'
+            ),
+            StatsProvider.B2BF2: ProviderConfig(
+                base_uri='https://stats.b2bf2.net/'
             )
         }
 

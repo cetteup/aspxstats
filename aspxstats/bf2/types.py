@@ -8,6 +8,7 @@ from .utils import group_stats_by_item
 class StatsProvider(str, Enum):
     BF2HUB = 'bf2hub'
     PLAYBF2 = 'playbf2'
+    B2BF2 = 'b2bf2'
 
 
 class SearchMatchType(str, Enum):
