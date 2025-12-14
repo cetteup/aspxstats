@@ -12,10 +12,9 @@ permissions:
 
 jobs:
   lint:
-    name: lint
     strategy:
       matrix:
-        python-version: [ "3.10", "3.13" ]
+        python-version: [ "3.10", "3.14" ]
         os: [ ubuntu-latest ]
     runs-on: ${{ matrix.os }}
 
@@ -46,10 +45,9 @@ jobs:
           flake8 aspxstats/** test/** --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
   unit-test:
-    name: unit-test
     strategy:
       matrix:
-        python-version: [ "3.10", "3.13" ]
+        python-version: [ "3.10", "3.11", "3.12", "3.13", "3.14" ]
         os: [ ubuntu-latest ]
     runs-on: ${{ matrix.os }}
 
