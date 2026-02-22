@@ -3,7 +3,8 @@ from typing import Dict, Optional, Union, Callable
 
 from .schemas import GETLEADERBOARD_RESPONSE_SCHEMA, SEARCHFORPLAYERS_RESPONSE_SCHEMA, \
     GETPLAYERINFO_GENERAL_STATS_RESPONSE_SCHEMA, GETPLAYERINFO_MAP_STATS_RESPONSE_SCHEMA, GETRANKINFO_RESPONSE_SCHEMA, \
-    GETAWARDSINFO_RESPONSE_SCHEMA, GETUNLOCKSINFO_RESPONSE_SCHEMA, GETBACKENDINFO_RESPONSE_SCHEMA
+    GETAWARDSINFO_RESPONSE_SCHEMA, GETUNLOCKSINFO_RESPONSE_SCHEMA, GETBACKENDINFO_RESPONSE_SCHEMA, \
+    VERIFYPLAYER_RESPONSE_SCHEMA
 from .types import StatsProvider, SearchMatchType, SearchSortOrder, PlayerSearchResponse, LeaderboardType, \
     ScoreLeaderboardId, WeaponType, VehicleType, \
     KitType, LeaderboardResponse, PlayerinfoKeySet, PlayerinfoResponse, \
@@ -415,6 +416,46 @@ class AspxClient(BaseAspxClient):
             cleaners: Optional[Dict[CleanerType, Callable[[str], str]]] = None
     ) -> dict:
         return parse_dict_values(parsed, GETBACKENDINFO_RESPONSE_SCHEMA, cleaners)
+
+    def verifyplayer_dict(
+            self,
+            pid: int,
+            nick: str,
+            auth: str
+    ) -> dict:
+        # Stick to original order of arguments
+        raw_data = self.get_aspx_data('VerifyPlayer.aspx', {
+            'auth': auth,
+            'SoldierNick': nick,
+            'pid': str(pid),
+        })
+        return self.validate_and_parse_verifyplayer_response(raw_data)
+
+    def validate_and_parse_verifyplayer_response(self, raw_data: str) -> dict:
+        valid_response, _ = self.is_valid_aspx_response(raw_data, self.response_validation_mode)
+        if not valid_response:
+            raise InvalidResponseError(f'{self.provider} returned an invalid VerifyPlayer response')
+
+        parsed = self.parse_aspx_response(raw_data, [
+            ParseTarget(to_root=True),
+            ParseTarget(to_root=True)
+        ])
+
+        self.validate_verifyplayer_response_data(parsed)
+
+        return self.parse_verifyplayer_response_values(parsed, self.cleaners)
+
+    # TODO Add tests
+    @staticmethod
+    def validate_verifyplayer_response_data(parsed: dict) -> None:
+        validate_dict(parsed, VERIFYPLAYER_RESPONSE_SCHEMA)
+
+    @staticmethod
+    def parse_verifyplayer_response_values(
+            parsed: dict,
+            cleaners: Optional[Dict[CleanerType, Callable[[str], str]]] = None
+    ) -> dict:
+        return parse_dict_values(parsed, VERIFYPLAYER_RESPONSE_SCHEMA, cleaners)
 
     @staticmethod
     def get_provider_config(provider: StatsProvider = StatsProvider.BF2HUB) -> ProviderConfig:

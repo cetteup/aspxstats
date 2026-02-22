@@ -147,3 +147,15 @@ async def async_getbackendinfo_dict(
 ) -> dict:
     async with AsyncAspxClient(provider, timeout, response_validation_mode) as client:
         return await client.getbackendinfo_dict()
+
+
+async def async_verifyplayer_dict(
+        pid: int,
+        nick: str,
+        auth: str,
+        provider: StatsProvider = StatsProvider.BF2HUB,
+        timeout: float = 2.0,
+        response_validation_mode: ResponseValidationMode = ResponseValidationMode.LAX
+) -> dict:
+    async with AsyncAspxClient(provider, timeout, response_validation_mode) as client:
+        return await client.verifyplayer_dict(pid, nick, auth)

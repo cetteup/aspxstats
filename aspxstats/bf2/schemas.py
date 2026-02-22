@@ -402,3 +402,11 @@ GETBACKENDINFO_RESPONSE_SCHEMA: DictSchema = {
         'descr': AttributeSchema(type=str)
     })
 }
+
+VERIFYPLAYER_RESPONSE_SCHEMA: DictSchema = {
+    'pid': AttributeSchema(type=str, is_numeric=True),
+    'nick': AttributeSchema(type=str, is_nick=True),
+    'spid': AttributeSchema(type=str, is_numeric=True),
+    'asof': AttributeSchema(type=str, is_numeric=True),
+    'result': AttributeSchema(type=str),
+}

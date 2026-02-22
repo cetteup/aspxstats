@@ -147,3 +147,15 @@ def getbackendinfo_dict(
 ) -> dict:
     with AspxClient(provider, timeout, response_validation_mode) as client:
         return client.getbackendinfo_dict()
+
+
+def verifyplayer_dict(
+        pid: int,
+        nick: str,
+        auth: str,
+        provider: StatsProvider = StatsProvider.BF2HUB,
+        timeout: float = 2.0,
+        response_validation_mode: ResponseValidationMode = ResponseValidationMode.LAX
+) -> dict:
+    with AspxClient(provider, timeout, response_validation_mode) as client:
+        return client.verifyplayer_dict(pid, nick, auth)

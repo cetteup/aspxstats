@@ -152,3 +152,17 @@ class AsyncAspxClient(AspxClient, AsyncBaseAspxClient):
     ) -> dict:
         raw_data = await self.get_aspx_data('getbackendinfo.aspx')
         return self.validate_and_parse_getbackendinfo_response(raw_data)
+
+    async def verifyplayer_dict(
+            self,
+            pid: int,
+            nick: str,
+            auth: str
+    ) -> dict:
+        # Stick to original order of arguments
+        raw_data = await self.get_aspx_data('verifyplayer.aspx', {
+            'auth': auth,
+            'SoldierNick': nick,
+            'pid': str(pid),
+        })
+        return self.validate_and_parse_verifyplayer_response(raw_data)
