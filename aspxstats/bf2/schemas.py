@@ -405,7 +405,8 @@ GETBACKENDINFO_RESPONSE_SCHEMA: DictSchema = {
 
 VERIFYPLAYER_RESPONSE_SCHEMA: DictSchema = {
     'pid': AttributeSchema(type=str, is_numeric=True),
-    'nick': AttributeSchema(type=str, is_nick=True),
+    # not treating this as a nick as failed verification should add a prefix we don't want to remove
+    'nick': AttributeSchema(type=str),
     'spid': AttributeSchema(type=str, is_numeric=True),
     'asof': AttributeSchema(type=str, is_numeric=True),
     'result': AttributeSchema(type=str),
