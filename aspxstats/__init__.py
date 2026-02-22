@@ -7,7 +7,7 @@ aspxstats.
 Python library for retrieving stats of Battlefield 2 and Battlefield 2142 players.
 """
 
-__version__ = '0.5.1'
+__version__ = '0.6.0'
 __author__ = 'cetteup'
 __credits__ = 'wilson212'
 __all__ = [
