@@ -160,7 +160,7 @@ class AsyncAspxClient(AspxClient, AsyncBaseAspxClient):
             auth: str
     ) -> dict:
         # Stick to original order of arguments
-        raw_data = await self.get_aspx_data('verifyplayer.aspx', {
+        raw_data = await self.get_aspx_data('VerifyPlayer.aspx', {
             'auth': auth,
             'SoldierNick': nick,
             'pid': str(pid),
