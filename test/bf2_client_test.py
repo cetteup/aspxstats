@@ -791,7 +791,7 @@ class AspxClientTest(unittest.TestCase):
                 }
             ),
             FixGetplayerinfoTestCase(
-                name='does nothing if player key is missing',
+                name='does nothing if data key is missing',
                 parsed={
                     'some-other-key': 'some-value'
                 },
@@ -800,7 +800,7 @@ class AspxClientTest(unittest.TestCase):
                 }
             ),
             FixGetplayerinfoTestCase(
-                name='does nothing if player key does not contain a dict',
+                name='does nothing if data key does not contain a dict',
                 parsed={
                     'data': 'not-a-dict',
                     'some-other-key': 'some-value'
@@ -815,6 +815,108 @@ class AspxClientTest(unittest.TestCase):
         for t in tests:
             # WHEN
             actual = AspxClient.fix_getplayerinfo_values(t.parsed)
+
+            # THEN
+            self.assertDictEqual(t.expected, actual)
+
+    def test_upgrade_getplayerinfo_response_data(self):
+        @dataclass
+        class UpgradeGetplayerinfoResponseDataTestCase:
+            name: str
+            key_set: PlayerinfoKeySet
+            parsed: dict
+            expected: dict
+
+        # GIVEN
+        tests: List[UpgradeGetplayerinfoResponseDataTestCase] = [
+            UpgradeGetplayerinfoResponseDataTestCase(
+                name='adds mising keys to general stats response',
+                key_set=PlayerinfoKeySet.GENERAL_STATS,
+                parsed={
+                    'data': {
+                        str(i): '0' for i in range(233) # 233 dummy keys to ensure expected length with keys missing
+                    }
+                },
+                expected={
+                    'data': {
+                        **{str(i): '0' for i in range(233)},
+                        'de-6': '0',
+                        'de-7': '0',
+                        'de-8': '0',
+                    }
+                }
+            ),
+            UpgradeGetplayerinfoResponseDataTestCase(
+                name='does not modify map stats response',
+                key_set=PlayerinfoKeySet.MAP_STATS,
+                parsed={
+                    'data': {
+                        str(i): '0' for i in range(233)  # 233 dummy keys to ensure expected length with keys missing
+                    }
+                },
+                expected={
+                    'data': {
+                        str(i): '0' for i in range(233)
+                    }
+                }
+            ),
+            UpgradeGetplayerinfoResponseDataTestCase(
+                name='does not modify general stats response without expected number of keys',
+                key_set=PlayerinfoKeySet.GENERAL_STATS,
+                parsed={
+                    'data': {
+                        'some-lonely-key': 'some-value',
+                    }
+                },
+                expected={
+                    'data': {
+                        'some-lonely-key': 'some-value',
+                    }
+                }
+            ),
+            UpgradeGetplayerinfoResponseDataTestCase(
+                name='does not modify general stats response containing some of would be added keys',
+                key_set=PlayerinfoKeySet.GENERAL_STATS,
+                parsed={
+                    'data': {
+                        **{str(i): '0' for i in range(232)},
+                        'de-6': '0',
+                    }
+                },
+                expected={
+                    'data': {
+                        **{str(i): '0' for i in range(232)},
+                        'de-6': '0',
+                    }
+                }
+            ),
+            UpgradeGetplayerinfoResponseDataTestCase(
+                name='does nothing if data key is missing',
+                key_set=PlayerinfoKeySet.GENERAL_STATS,
+                parsed={
+                    'some-other-key': 'some-value'
+                },
+                expected={
+                    'some-other-key': 'some-value'
+                }
+            ),
+            UpgradeGetplayerinfoResponseDataTestCase(
+                name='does nothing if data key does not contain a dict',
+                key_set=PlayerinfoKeySet.GENERAL_STATS,
+                parsed={
+                    'data': 'not-a-dict',
+                    'some-other-key': 'some-value'
+                },
+                expected={
+                    'data': 'not-a-dict',
+                    'some-other-key': 'some-value'
+                }
+            ),
+        ]
+
+        for t in tests:
+            # WHEN
+            actual = AspxClient.upgrade_getplayerinfo_response_data(t.key_set, t.parsed)
 
             # THEN
             self.assertDictEqual(t.expected, actual)

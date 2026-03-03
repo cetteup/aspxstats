@@ -189,6 +189,7 @@ class AspxClient(BaseAspxClient):
         ])
 
         parsed = self.fix_getplayerinfo_values(parsed)
+        parsed = self.upgrade_getplayerinfo_response_data(key_set, parsed)
 
         self.validate_getplayerinfo_response_data(key_set, parsed)
 
@@ -233,6 +234,28 @@ class AspxClient(BaseAspxClient):
             matches_favorite = key in favorites
             if matches_favorite and isinstance(value, str) and value.startswith('time'):
                 parsed['data'][key] = value[4:]
+
+        return parsed
+
+    @staticmethod
+    def upgrade_getplayerinfo_response_data(key_set: PlayerinfoKeySet, parsed: dict) -> dict:
+        # Can't upgrade anything if the key is missing/of wrong type
+        if not isinstance(parsed.get('data'), dict):
+            return parsed
+
+        # Only general stats response need to be upgraded
+        if key_set is not PlayerinfoKeySet.GENERAL_STATS:
+            return parsed
+
+        """
+        Older versions of bf2statistics do not include the keys related to gadgets added as part the
+        Special Forces expansion pack (teargas/flashbangs, graplink hook and zipline deployments)
+        => add keys to ensure compatibility (only if all other keys are present and all three are missing)
+        """
+        keys = ['de-6', 'de-7', 'de-8']
+        if len(parsed['data']) == 233 and all(key not in parsed['data'] for key in keys):
+            for key in keys:
+                parsed['data'][key] = '0'
 
         return parsed
 
