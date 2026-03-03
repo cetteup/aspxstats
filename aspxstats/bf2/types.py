@@ -9,6 +9,7 @@ class StatsProvider(str, Enum):
     BF2HUB = 'bf2hub'
     PLAYBF2 = 'playbf2'
     B2BF2 = 'b2bf2'
+    GAMEPPY = 'gameppy'
 
 
 class SearchMatchType(str, Enum):

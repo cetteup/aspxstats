@@ -495,6 +495,9 @@ class AspxClient(BaseAspxClient):
             ),
             StatsProvider.B2BF2: ProviderConfig(
                 base_uri='https://stats.b2bf2.net/'
+            ),
+            StatsProvider.GAMEPPY: ProviderConfig(
+            base_uri='http://rank.gameppy.com/ASP/'
             )
         }
 
